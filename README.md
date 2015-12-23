@@ -54,17 +54,19 @@ The filtering is applied to the file name, while the _script extension_ states h
 - Mac OS X or Linux (Theoretical Windows)
 - Node.js including npm (Version 5.2 and greater)
 - Internet access to clone Dachshund from git and to download 3rd party npm modules
-- GIT Version Control System (command line client or some UI client)
+- GIT Version Control System (command line client or some UI client; just in case you want to download or)
 
 ## Setup
 
-### Step 1 - Clone Dachshund from GitHub
-Use your UI client and clone the repository _[https://github.com/dachshund-wcms/core](https://github.com/dachshund-wcms/core)_ change to the flag version 2.0 or use a command line client.
+### Step 1.1 - Download and Unpack ...
+All releases are listed here. Download the source code from [https://github.com/dachshund-wcms/core/releases](https://github.com/dachshund-wcms/core/releases/latest) and unpack it into your file system.
+
+### Step 1.2 - ... or Clone Latest Version from GitHub
+Use your UI client and clone the repository [https://github.com/dachshund-wcms/core](https://github.com/dachshund-wcms/core) change to the flag version 2.0 or use a command line client.
 
 ```bash
 cd basepath/to/clone/dachshund
 git clone https://github.com/dachshund-wcms/core dachshund
-cd dachshund
 ```
 
 ### Step 2 - Finish installation
