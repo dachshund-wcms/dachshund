@@ -1,0 +1,33 @@
+<body resourcePath="{resource.path}">
+<div class="container">
+    <section id="gridSystem">
+        <div class="page-header">
+            <h2>Login
+                <small>{if pathInfo.parameters.pagename}to {pathInfo.parameters.pagename}{end}</small>
+            </h2>
+        </div>
+        <div class="row show-grid">
+            <div class="span6">
+                <form class="well form-inline">
+                    <div class="alert alert-error alert-login-incorrect">
+                        <strong>Username or password incorrect.</strong>
+                    </div>
+                    <div class="alert login-in-progress">
+                        <img src="/libs/img/progressbars/throbber-FCF8E3.gif"> <strong>Check user
+                        authentication...</strong>
+                    </div>
+                    <div class="alert alert-success login-successful">
+                        <strong>Login successful.</strong>
+                    </div>
+                    <input type="hidden" id="redirectTo" value="{pathInfo.parameters.redirectTo}"/>
+                    <input id="username" type="text" class="input-small" placeholder="Username">
+                    <input id="password" type="password" class="input-small" placeholder="Password">
+                    <label class="checkbox">
+                    </label>
+                    <button type="button" id="login" class="btn">Login</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+</body>

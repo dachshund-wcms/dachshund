@@ -1,0 +1,4 @@
+<li class="template"
+    data-template-path="{resource.path}" {if properties.thumb}style="background-image:url('{properties.thumb}')"{end}>
+<div class="templateName">{properties.title}</div>
+</li>

@@ -1,0 +1,15 @@
+<div class="componentContainer {component.componentResource.name} {if component.superComponent}{component.superComponent.componentResource.name}{end}"
+     data-resourcePath="{resource.path}" data-resourceName="{resource.name}">{includeScript("content.jazz")}
+</div>
+{if properties.deactivateScript neq "true"}
+<script type="text/javascript">
+
+    {includeScript("script.static")}
+    ("{component.componentResource.path}.js");
+
+    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {{
+        loadCss.loadStyle("{component.componentResource.path}.css");
+    }});
+
+</script>
+{end}

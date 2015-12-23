@@ -1,0 +1,21 @@
+<body resourcePath="{resource.path}">
+<div class="container">
+    <section id="gridSystem">
+        <div class="page-header">
+            <h2>User and Group Management</h2>
+        </div>
+        <div class="row show-grid">
+            <div class="span6 well">
+                <h3>List of Users</h3>
+                <ul class="unstyled">
+                    {foreach userPath in properties.userlist}
+                    <li>
+                        {includeComponent(userPath, "/apps/core/services/user/management/user")}
+                    </li>
+                    {end}
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+</body>

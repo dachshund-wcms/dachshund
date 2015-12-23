@@ -1,0 +1,5 @@
+{if component.req.attributes.editMode}
+<div class="editable" title="Double click to edit">
+    <h1>Component Container <span class="glyphicon glyphicon-edit"></span></h1>
+</div>
+{end}

@@ -1,0 +1,7 @@
+<div class="actionMenuBackground"></div>
+<div class="actionMenu"><span class="glyphicon glyphicon-th"></span></div>
+<div class="editMenu editMenuItem" title="Open Page Dialog (ctrl+r)"><span class="glyphicon glyphicon-pencil"></span>
+</div>
+<div class="editMode editMenuItem" title="Turn Preview on/off (ctrl+e)"><span
+        class="glyphicon glyphicon-eye-close"></span></div>
+<div class="pagetree editMenuItem" title="Open Pagetree (ctrl+w)"><span class="glyphicon glyphicon-list"></span></div>

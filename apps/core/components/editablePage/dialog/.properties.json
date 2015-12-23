@@ -1,0 +1,40 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Page Properties",
+		"reloadPageOnChange": true,
+		"pageTitle": {
+			"input": "text",
+			"label": "Page Title",
+			"property": "title",
+			"description": "Title of the page which will be shown on the page tab"
+		},
+		"pageLabel": {
+			"input": "text",
+			"label": "Page Label",
+			"property": "label",
+			"description": "Label of the page which will be displayed in the page tree"
+		},
+		"description": {
+			"input": "textarea",
+			"rows": 3,
+			"label": "Description",
+			"property": "description",
+			"description": "The description which is added as meta tag to the page head"
+		},
+		"keywords": {
+			"input": "text",
+			"label": "Keywords",
+			"property": "keywords",
+			"description": "Comma separeted list with keywords which is added as meta tag to the page head"
+		},
+		"author": {
+			"input": "text",
+			"label": "Author",
+			"property": "author",
+			"description": "Name of the page author which is added as meta tag to the page head"
+		}
+	}
+}

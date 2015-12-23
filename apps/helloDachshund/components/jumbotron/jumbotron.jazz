@@ -1,0 +1,8 @@
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+    <div class="container">
+        <h1>{properties.title}</h1>
+        <p>{properties.description}</p>
+        <p><a class="btn btn-primary btn-lg" href="{properties.link}" role="button">Learn more &raquo;</a></p>
+    </div>
+</div>

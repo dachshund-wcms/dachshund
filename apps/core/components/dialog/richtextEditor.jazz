@@ -1,0 +1,17 @@
+<dt class="richtextEditor fullrow">{parameter.element.label}</dt>
+<dd class="richtextEditor fullrow" data-editor-id="richtextEditor_{parameter.name}"
+    data-toolbar='{@toJson(parameter.element.toolbar)}' data-property="{parameter.name}">
+    <textarea name="{parameter.name}" data-property="{parameter.element.property}" id="richtextEditor_{parameter.name}"
+              rows="10" cols="80">{parameter.value}</textarea>
+
+    <div class="description">{parameter.element.description}</div>
+</dd>
+</dd>
+<script type="text/javascript">
+    require(["/apps/core/components/dialog.richtextEditor.js"], function(richtextEditor) {{
+            richtextEditor.init();
+        }});
+    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {{
+            loadCss.loadStyle("/apps/core/components/dialog.richtextEditor.css");
+        }});
+</script>

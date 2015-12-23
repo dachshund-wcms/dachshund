@@ -1,0 +1,7 @@
+{if properties.videoID}
+<iframe width="{properties.width}" height="{properties.height}"
+        src="//www.youtube.com/embed/{properties.videoID}?{properties.playerOptions}" frameborder="0"
+        allowfullscreen></iframe>
+{else}
+<h1><i>There is no video defined</i></h1>
+{end}

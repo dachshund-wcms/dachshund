@@ -1,0 +1,209 @@
+define(["jquery", "/libs/scripts/imageUtils/imageUtils.js", "/libs/scripts/jquery-fileupload/jquery.fileupload.js"], function($, ImageUtils) {
+
+	var Multiimage = function($multiimage) {
+		this.$multiimage = $multiimage;
+		this.$dialogContainer = $("div#dialogContainer");
+		this.componentPath = this.$dialogContainer.attr("data-resourcepath");
+		this.loadImageReferenceParameter();
+		this.loadPreview();
+		this.bindImageUploadTrigger();
+	};
+
+	Multiimage.prototype.loadImageReferenceParameter = function() {
+		this.imageReferenceModule = null;
+		this.imageReferenceName = null;
+		if (this.$multiimage.data("image-reference-module") != undefined && this.$multiimage.data("image-reference-module").length > 0)
+		{
+			this.imageReferenceModule = this.$multiimage.data("image-reference-module");
+		}
+
+		if (this.$multiimage.data("image-reference-name") != undefined && this.$multiimage.data("image-reference-name").length > 0)
+		{
+			this.imageReferenceName = this.$multiimage.data("image-reference-name");
+		}
+	};
+
+	Multiimage.prototype.loadPreview = function() {
+		var $imageList = this.$multiimage.find(".imagelist");
+		$imageList.find(".image").remove();
+
+		var $imageNamesInput = this.$multiimage.find("input.imageNames");
+		var imageNames = [];
+		if ($imageNamesInput.val().length > 0)
+		{
+			var imageNamesFromInput = JSON.parse($imageNamesInput.val());
+			if (imageNamesFromInput instanceof Array)
+			{
+				imageNames = imageNamesFromInput;
+			}
+		}
+
+		var resourcePath = this.componentPath;
+		$.each(imageNames, function(index, imageFilename) {
+			var imagePath = resourcePath + "/" + imageFilename;
+			var imageUtils = new ImageUtils(imagePath);
+			var thumbPath = imageUtils.getMinImagePath({width: 110, height: 110});
+			var $imageElement = $("<li class='image'></li>");
+			$imageElement.attr("data-imagename", imageFilename);
+			$imageElement.attr("data-imagepath", imagePath);
+			$imageElement.css({"background-image": "url('" + thumbPath + "')"});
+			$imageElement.append("<span title='Delete Image' class='action delete glyphicon glyphicon-remove'></span>");
+			$imageElement.appendTo($imageList);
+		});
+
+		this.bindDeleteAction();
+		this.bindAddImageAction();
+	};
+
+	Multiimage.prototype.bindImageUploadTrigger = function() {
+		var $imageInputElement = this.$multiimage.find("div.imageElements");
+		var multiimage = this;
+
+		$imageInputElement.find(".upload").click(function() {
+			$imageInputElement.find("input[name='imageSelection']").trigger("click");
+		});
+
+		$imageInputElement.find("input[name='imageSelection']").fileupload({
+																			   dropZone: $imageInputElement,
+																			   add: function(e, data) {
+																				   if ($(this).data("aborted") == "true")
+																				   {
+																					   return;
+																				   }
+
+																				   multiimage.addImageToHiddenInput(data.files[0].name);
+																				   data.submit();
+																			   },
+																			   url: multiimage.componentPath + ".uploadFile.json",
+																			   stop: function(e, data) {
+																				   multiimage.loadPreview($(this).parent());
+																			   },
+																			   dragover: function(e) {
+																			   }
+																		   });
+	}
+
+	Multiimage.prototype.addImageToHiddenInput = function(filename) {
+		var $imageNamesInput = this.$multiimage.find("input.imageNames");
+		var imageNames = [];
+		if ($imageNamesInput.val().length > 0)
+		{
+			var imageNamesFromInput = JSON.parse($imageNamesInput.val());
+			if (imageNamesFromInput instanceof Array)
+			{
+				imageNames = imageNamesFromInput;
+			}
+		}
+
+		var imageIndex = imageNames.indexOf(filename);
+
+		if (imageIndex == -1)
+		{
+			imageNames.push(filename);
+			$imageNamesInput.val(JSON.stringify(imageNames));
+
+			var modifiedProperty = {};
+			modifiedProperty[$imageNamesInput.data("property")] = JSON.stringify(imageNames);
+			$.post(this.componentPath + ".modifyProperties.json", modifiedProperty);
+		}
+	}
+
+	Multiimage.prototype.removeImageFromHiddenInput = function(filename) {
+		var $imageNamesInput = this.$multiimage.find("input.imageNames");
+		var imageNames = [];
+		if ($imageNamesInput.val().length > 0)
+		{
+			var imageNamesFromInput = JSON.parse($imageNamesInput.val());
+			if (imageNamesFromInput instanceof Array)
+			{
+				imageNames = imageNamesFromInput;
+			}
+		}
+
+		var imageIndex = imageNames.indexOf(filename);
+
+		if (imageIndex != -1)
+		{
+			imageNames.splice(imageIndex, 1);
+			$imageNamesInput.val(JSON.stringify(imageNames));
+
+			var modifiedProperty = {};
+			modifiedProperty[$imageNamesInput.data("property")] = JSON.stringify(imageNames);
+			$.post(this.componentPath + ".modifyProperties.json", modifiedProperty);
+		}
+	}
+
+	Multiimage.prototype.bindDeleteAction = function() {
+		var multiimage = this;
+		//var resourcePath = this.resourcePath;
+		//var removeImageFromHiddenInput = this.removeImageFromHiddenInput;
+		var $imageList = this.$multiimage.find(".imagelist");
+		$imageList.find(".action.delete").unbind();
+		$imageList.find(".action.delete").click(function() {
+			var $image = $(this).parent();
+			var filename = $image.data("imagename");
+			var imagepath = $image.data("imagepath");
+			var deleteImage = function(checkImageModule) {
+				if (checkImageModule != undefined && checkImageModule.isImageUsed != undefined && checkImageModule.isImageUsed({filename: filename, path: imagepath}, multiimage.imageReferenceName))
+				{
+					alert("Image is still in use. Remove it from the editor before removing it here.");
+				}
+				else if (confirm("Do you want to delete this image?"))
+				{
+					$.get(multiimage.componentPath + ".deleteFile.json", {name: filename}, function() {
+						multiimage.removeImageFromHiddenInput(filename);
+						$image.remove();
+					});
+				}
+			};
+			if (multiimage.imageReferenceModule != null)
+			{
+				require([multiimage.imageReferenceModule], deleteImage);
+			}
+			else
+			{
+				deleteImage();
+			}
+			return false;
+		});
+	}
+
+	Multiimage.prototype.bindAddImageAction = function() {
+		var imageReferenceModule = this.imageReferenceModule;
+		var imageReferenceName = this.imageReferenceName;
+		if (imageReferenceModule != null)
+		{
+			var $imageList = this.$multiimage.find(".imagelist li.image");
+			$imageList.unbind();
+			$imageList.click(function() {
+				var $image = $(this);
+				var filename = $image.data("imagename");
+				var imagepath = $image.data("imagepath");
+				require([imageReferenceModule], function(imageReferenceModule) {
+					if (imageReferenceModule.addImage != undefined)
+					{
+						imageReferenceModule.addImage({filename: filename, path: imagepath}, imageReferenceName);
+					}
+				});
+
+				return false;
+			});
+		}
+	}
+
+	var init = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("dd.multiimage").each(function(index, element) {
+			var $multiimage = $(element);
+			if ($multiimage.data("controller") == undefined)
+			{
+				$multiimage.data("controller", new Multiimage($multiimage));
+			}
+		});
+	}
+
+	return {
+		init: init
+	}
+
+});

@@ -1,0 +1,7 @@
+<dt>{parameter.element.label}</dt>
+<dd>
+    <input type="checkbox" data-property="{parameter.element.property}" name="{parameter.name}" {if
+    @isUndefined(parameter.value) and parameter.element.value}checked="checked"{end} {if @isDefined(parameter.value) and
+    parameter.value eq 'true'}checked="checked"{end}>
+    <div class="description">{parameter.element.description}</div>
+</dd>

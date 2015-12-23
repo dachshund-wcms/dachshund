@@ -1,0 +1,6 @@
+<dt>{parameter.element.label}</dt>
+<dd>
+    <input type="text" data-property="{parameter.element.property}" name="{parameter.name}" value="{parameter.value}">
+
+    <div class="description">{parameter.element.description}</div>
+</dd>

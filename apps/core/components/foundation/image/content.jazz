@@ -1,0 +1,8 @@
+{if properties.imagepath}
+<img src="{resource.path}/{properties.imagepath}" class="{properties.class}" alt="{properties.imageAlt}"
+     title="{properties.imageTitle}">
+{else}
+<div class="imagePlaceholder">
+    <span class="glyphicon glyphicon-picture"></span>
+</div>
+{end}

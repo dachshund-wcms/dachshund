@@ -1,0 +1,9 @@
+<head>
+    <meta charset="UTF-8">
+    {includeScript("pagetitle.jazz")}
+    {includeScript("headScripts.jazz")}
+    {includeScript("headStyles.jazz")}
+    {if properties.includeManifest}
+    {includeScript("manifest-appcache-script-include.static")}
+    {end}
+</head>

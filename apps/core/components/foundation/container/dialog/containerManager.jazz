@@ -1,0 +1,29 @@
+<dt class="containerManager">{parameter.element.label}</dt>
+<dd class="containerManager">
+    <input type="hidden" data-property="{parameter.element.property}" name="{parameter.name}"
+           value='{escape(@toJson(parameter.value))}'>
+    <ul class="containerElements"></ul>
+    <div class="description">{parameter.element.description}</div>
+</dd>
+<dt class="containerManager">Add Component</dt>
+<dd class="newContainer">
+    <ul class="newElements">
+        {foreach component in parameter.element.components}
+        <li class="newComponent" data-container-respourcepath="{component.respourcepath}" data-resource-name="title">
+            <div class="actions"><span class="remove glyphicon glyphicon-remove" title="Remove Component"></span></div>
+            <span class='number'></span>
+            <span class='title'>{component.name}</span>
+            <span class="label-new">New</span>
+        </li>
+        {end}
+    </ul>
+    <div class="description">Drag and drop elements to add new elements</div>
+</dd>
+<script type="text/javascript">
+    require(["/apps/core/components/foundation/container/dialog.containerManager.js"], function(containerManager) {{
+            containerManager.init()
+        }});
+    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {{
+            loadCss.loadStyle("/apps/core/components/foundation/container/dialog.containerManager.css");
+        }});
+</script>

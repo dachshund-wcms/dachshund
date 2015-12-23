@@ -1,0 +1,6 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/editableContainer",
+	"componentPath": "SELF",
+	"title": "Markdown Text Component"
+}

@@ -1,0 +1,2 @@
+{if component.req.attributes.editMode}
+<div class="editable" title="Double click to edit"></div>{end}

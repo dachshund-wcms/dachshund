@@ -1,0 +1,13 @@
+{if properties.components}
+<ul class="containerList">
+    {foreach extendedComponent in properties.extendedComponents}
+    <li class="containerItem" data-resourcepath="{resource.path}/{extendedComponent.name}">
+        {if properties.requestIsForInnerContent}
+        {includeComponent(extendedComponent.name, extendedComponent.componentPath, "")}
+        {else}
+        {includeComponent(extendedComponent.name)}
+        {end}
+    </li>
+    {end}
+</ul>
+{end}

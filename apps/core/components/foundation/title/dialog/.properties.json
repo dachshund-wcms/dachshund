@@ -1,0 +1,40 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Title Dialog",
+		"header": {
+			"input": "text",
+			"label": "Title",
+			"property": "title",
+			"description": "The title which is shown"
+		},
+		"tooltip": {
+			"input": "text",
+			"label": "Tooltip",
+			"property": "tooltip",
+			"description": "Text which is shown when mouse over is over title"
+		},
+		"size": {
+			"input": "dropdown",
+			"label": "Size",
+			"property": "size",
+			"description": "Size of the title",
+			"options": [
+				{
+					"name": "Main Title (h1)",
+					"value": "h1"
+				},
+				{
+					"name": "Section Title (h2)",
+					"value": "h2"
+				},
+				{
+					"name": "Subtitle (h3)",
+					"value": "h3"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,31 @@
+{
+	"server": {
+		"port": 8888
+	},
+	"repositoryManager" : {
+		"repositoryManagerPathSelector": [
+			{
+				"name": "Local Resource Manager",
+				"nodeModule": "local-resource-manager",
+				"path": ".*",
+				"note": "This is the default resource manager. It's the last element in the array and matches every given path."
+			}
+		]
+	},
+	"user" :{
+		"usersDirectory": "/home/users",
+		"groupsDirectory": "/home/groups",
+		"passwordSalt": "dachshund",
+		"session": {
+			"allowAnonymousUser": true,
+			"localCachePath": "/cache/user/session",
+			"anonymousUserPath": "/home/users/anonymous",
+			"authenticationHandlerModule": "authentication-handler-basic-auth"
+		}
+	},
+	"i18n": {
+		"locales": ["en", "de"],
+		"directory": "./locales",
+		"defaultLocale": "en"
+	}
+}

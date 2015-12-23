@@ -1,0 +1,29 @@
+<div class="editMode content {if @isNot(component.req.userSession.isAnonymous)}enabled{end} {if component.req.attributes.editMode}active{end}">
+    <h1>Edit Mode:<span class="state off">Off</span><span class="state on">On</span></h1>
+
+    <div title="Switch Edit Mode" class="glyphicon glyphicon-edit editModeButton"></div>
+    <div class="description anonymous {if @isNot(component.req.userSession.isAnonymous)}hide{end}">Login before
+        activating edit mode
+    </div>
+    <div class="description on {if component.req.userSession.isAnonymous or component.req.attributes.editMode}hide{end}">
+        Presse here to activate edit mode
+    </div>
+    <div class="description off {if component.req.userSession.isAnonymous or not component.req.attributes.editMode}hide{end}">
+        Presse here to deactivate edit mode
+    </div>
+    <div class="login {if component.req.userSession.isAnonymous}active{end}">
+        <form id="loginform">
+            <dl>
+                <dt>Username</dt>
+                <dd><input name="username" type="text"></dd>
+                <dt>Password</dt>
+                <dd><input name="password" type="password"></dd>
+            </dl>
+            <span class="message">You're not authenticated</span>
+            <input type="submit" name="login" value="Login">
+        </form>
+    </div>
+    <div class="backToLogin">
+        <a href="{resource.path}.html">← Back to content page</a>
+    </div>
+</div>

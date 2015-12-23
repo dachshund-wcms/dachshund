@@ -1,0 +1,7 @@
+<body resourcePath="{resource.path}">
+
+    {includeScript('navbar.jazz')}
+    {includeScript('content.jazz')}
+    {includeScript('clientScripts.jazz')}
+
+</body>

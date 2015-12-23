@@ -1,0 +1,75 @@
+body.editActive {
+  .componentContainer.container {
+    padding-top: 50px;
+
+    &:hover:not(.edit) > div.editable {
+      border: 0;
+      color: black;
+    }
+
+    &.edit > div.editable {
+      margin: 0;
+    }
+
+    & > div.editable {
+      & > * {
+        display: block;
+      }
+      position: absolute;
+      left: -5px;
+      top: -5px;
+      right: -5px;
+
+      bottom: 50px;
+      height: 64px;
+      margin: 5px;
+      opacity: 1;
+      color: #7E7E7E;
+
+      .glyphicon {
+        font-size: 20px;
+      }
+
+      &:hover {
+        margin: 0px;
+        border: 5px solid rgba(214, 163, 75, 0.75) !important;
+        & h1 {
+          border-color: rgba(0, 0, 0, 0.75);
+        }
+      }
+    }
+  }
+}
+
+.componentContainer.container {
+  & > div.editable > * {
+    display: none;
+  }
+
+  ul.containerList {
+    margin: 0;
+    padding: 0;
+  }
+
+  li.containerItem {
+    list-style-type: none;
+
+    &.selected {
+      background-color: rgba(214, 163, 75, 0.3);
+      -webkit-transition: background-color 500ms ease;
+      -moz-transition: background-color 500ms ease;
+      -o-transition: background-color 500ms ease;
+      -ms-transition: background-color 500ms ease;
+      transition: background-color 500ms ease;
+    }
+
+    &:not(.selected) {
+      background-color: transparent;
+      -webkit-transition: background-color 500ms ease;
+      -moz-transition: background-color 500ms ease;
+      -o-transition: background-color 500ms ease;
+      -ms-transition: background-color 500ms ease;
+      transition: background-color 500ms ease;
+    }
+  }
+}

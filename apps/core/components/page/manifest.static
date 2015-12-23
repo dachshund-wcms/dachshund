@@ -1,0 +1,16 @@
+CACHE
+MANIFEST
+#
+list
+of
+files
+which
+shall
+be
+cached
+# /
+test.css
+# /
+test.js
+# /
+test.pngs

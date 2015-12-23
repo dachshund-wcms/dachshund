@@ -1,0 +1,20 @@
+<script type="text/javascript">
+    require([
+                "/libs/scripts/bootstrap/bootstrap-transition.js"
+                , "/libs/scripts/bootstrap/bootstrap-alert.js"
+                , "/libs/scripts/bootstrap/bootstrap-modal.js"
+                , "/libs/scripts/bootstrap/bootstrap-dropdown.js"
+                , "/libs/scripts/bootstrap/bootstrap-scrollspy.js"
+                , "/libs/scripts/bootstrap/bootstrap-tab.js"
+                , "/libs/scripts/bootstrap/bootstrap-tooltip.js"
+                , "/libs/scripts/bootstrap/bootstrap-popover.js"
+                , "/libs/scripts/bootstrap/bootstrap-button.js"
+                , "/libs/scripts/bootstrap/bootstrap-collapse.js"
+                , "/libs/scripts/bootstrap/bootstrap-carousel.js"
+                , "/libs/scripts/bootstrap/bootstrap-typeahead.js"
+            ]);
+</script>
+
+
+<link rel="stylesheet" type="text/css" href="{component.componentResource.path}.css"/>
+<link rel="stylesheet" type="text/css" href="/libs/styles/bootstrap.css"/>

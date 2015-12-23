@@ -1,0 +1,75 @@
+define(["jquery", "/libs/scripts/jquery-fileupload/jquery.fileupload.js"], function($) {
+
+	var loadPreview = function($imageElementDroparea) {
+		var $dialogContainer = $("div#dialogContainer");
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		$.get(resourcePath + ".files.json", function(resources) {
+			if (resources.length == 0)
+			{
+				$imageElementDroparea.css({"background-image": ""});
+			}
+			else
+			{
+				var imagePath = resourcePath + "/" + resources[0];
+				imagePath = imagePath.replace(".png", ".max.300x200.png").replace(".jpg", ".max.300x200.jpg").replace(".jpeg", ".max.300x200.jpeg");
+				$imageElementDroparea.css({"background-image": "url('" + imagePath + "')"});
+			}
+		});
+	}
+
+	var bindImageUploadTrigger = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $imageInputElement = $dialogContainer.find("div.imageElement");
+
+
+		$imageInputElement.find(".droparea .hint").click(function() {
+			$imageInputElement.find(".droparea input[name='imageSelection']").trigger("click");
+		});
+		$imageInputElement.find(".droparea input[name='imageSelection']").fileupload({
+																						 dropZone: $imageInputElement.find(".droparea"),
+																						 add: function(e, data) {
+																							 if ($(this).data("aborted") == "true")
+																							 {
+																								 return;
+																							 }
+
+																							 $.get(resourcePath + ".clearFiles.json", {includeHiddenResources: true}, function() {
+																								 data.submit();
+																							 });
+																						 },
+																						 drop: function(e, data) {
+																							 $(this).parent().data("aborted", "false");
+																							 var maxNumberOfFiles = parseInt($(this).data("maxnumberoffiles"));
+																							 if (maxNumberOfFiles != undefined && maxNumberOfFiles < data.files.length)
+																							 {
+																								 alert("The maximum number of files to be uploaded is " + maxNumberOfFiles + ".");
+																								 $(this).parent().data("aborted", "true");
+																							 }
+																						 },
+																						 maxNumberOfFiles: 1,
+																						 uploadedFiles: 0,
+																						 url: resourcePath + ".uploadFile.json?maxNumberOfFiles=1",
+																						 stop: function() {
+																							 $(this).parent().find(".hint").removeClass("dragover");
+																							 loadPreview($(this).parent());
+																						 },
+																						 dragover: function(e) {
+																							 $(this).parent().find(".hint").addClass("dragover");
+																						 }
+																					 });
+	}
+
+	var init = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		var $imageInputElementDroparea = $dialogContainer.find("div.imageElement .droparea");
+		$imageInputElementDroparea.each(function(index, element) {
+			loadPreview($(element));
+		});
+		bindImageUploadTrigger();
+	}
+
+	return {
+		init: init
+	}
+});

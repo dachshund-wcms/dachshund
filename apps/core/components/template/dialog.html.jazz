@@ -1,0 +1,6 @@
+<div class="templateTitle">{properties.title}</div>
+{if properties.dialogPath}
+{includeComponent(properties.contentPath, properties.dialogPath)}
+{else}
+{includeComponent(properties.contentPath, "/apps/core/components/editablePage/dialog")}
+{end}

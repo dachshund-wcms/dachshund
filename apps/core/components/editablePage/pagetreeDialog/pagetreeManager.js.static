@@ -1,0 +1,367 @@
+define(["jquery", "/libs/scripts/dialogData/dialogData.js", "/libs/scripts/jstree/jstree.min.js"], function($, dialogData) {
+
+	var $dialogContainer = null;
+	var $pagetreeManager = null;
+	var $pageTree = null;
+	var $newPageDialog = null;
+	var PARENT_ID_ROOT_NODE = "#";
+	var componentResourcePathParts;
+	var depthRootPath;
+	var componentResourcePath;
+	var nodeMoved = null;
+
+	var createTreeElements = function(pagelist) {
+		var treeElements = []
+		if (!(pagelist instanceof Array))
+		{
+			var element = pagelist;
+			pagelist = [];
+			pagelist.push(element);
+		}
+		for (pageListElementIndex in pagelist)
+		{
+			var pageListElement = pagelist[pageListElementIndex];
+			var treeElement = {
+				id: pageListElement.path,
+				name: pageListElement.name,
+				text: pageListElement.label,
+				children: pageListElement.hasChildPages,
+				template: pageListElement.template,
+				availableChildTemplates: pageListElement.availableChildTemplates
+			}
+			treeElements.push(treeElement);
+		}
+
+		return treeElements;
+	}
+
+	var loadTreeElement = function(treeElement, callback) {
+		if (treeElement.id === PARENT_ID_ROOT_NODE)
+		{
+			loadRootPage(componentResourcePathParts, 1, function(page, depth) {
+				depthRootPath = depth;
+				var treeElements = createTreeElements(page);
+				callback.call(this, treeElements);
+			});
+		}
+		else
+		{
+			$.get(treeElement.id + ".listChildPages.json", function(childPages) {
+				var treeElements = createTreeElements(childPages);
+				callback.call(this, treeElements);
+			}).fail(function() {
+				callback.call(this, []);
+			});
+		}
+	}
+
+	var buildResourcepath = function(componentResourcePathParts, maxPathLevel) {
+		var resultResourcePathParts = [];
+		for (var pathLevel = 0; pathLevel <= maxPathLevel; pathLevel++)
+		{
+			resultResourcePathParts.push("/");
+			resultResourcePathParts.push(componentResourcePathParts[pathLevel]);
+		}
+		var resultResourcePath = resultResourcePathParts.join("");
+		return resultResourcePath;
+	}
+
+	var loadRootPage = function(componentResourcePathParts, maxPathLevel, callback) {
+		var rootPath = buildResourcepath(componentResourcePathParts, maxPathLevel);
+		$.get(rootPath + ".aboutPage.json", function(aboutPage) {
+			callback(aboutPage, maxPathLevel);
+		}).fail(function(reason) {
+			loadRootPage(componentResourcePathParts, maxPathLevel + 1, callback);
+		});
+	}
+
+	var addActionsToPages = function() {
+		var $actionsWithoutDelete = $("<div class='actions'></span>");
+		$actionsWithoutDelete.append("<span class='editLabel glyphicon glyphicon-pencil' title='Change Page Label'></span>");
+		$actionsWithoutDelete.append("<span class='addChildPage glyphicon glyphicon-import' title='Add Child Page'></span>");
+
+		var $actionsWithDelete = $actionsWithoutDelete.clone();
+		$actionsWithDelete.append("<span class='removePage glyphicon glyphicon-remove' title='Remove Page'></span>");
+
+		var $pagesWithoutActions = $pageTree.find("div.jstree-wholerow");
+
+		$pagesWithoutActions.each(function(index, element) {
+			var $jstreeNode = $(element);
+			var jstreeNodeReference = $pageTree.jstree(true).get_node($jstreeNode.closest('li'));
+
+			if ($jstreeNode.find(".actions").length == 0)
+			{
+				if (jstreeNodeReference.parent == PARENT_ID_ROOT_NODE)
+				{
+					$jstreeNode.append($actionsWithoutDelete.clone());
+				}
+				else
+				{
+					$jstreeNode.append($actionsWithDelete.clone());
+				}
+			}
+		});
+		bindActions();
+	}
+
+	var bindActions = function() {
+		var $addChildAction = $pageTree.find(".actions .addChildPage");
+		var $editLabel = $pageTree.find(".actions .editLabel");
+		var $removePage = $pageTree.find(".actions .removePage");
+
+
+		$addChildAction.unbind();
+		$addChildAction.click(function() {
+
+			var $pageElement = $(this).closest("li.jstree-node");
+			var componentResourcePath = $pageElement.attr("id");
+			if ($pageElement.children("div.addChildComponent").length == 0)
+			{
+				$pageTree.find("div.addChildComponent").remove();
+				var $addChildComponentContainer = $("<div class='addChildComponent'></div>")
+				$addChildComponentContainer.insertAfter($pageElement.children("a.jstree-anchor"));
+				$addChildComponentContainer.load(componentResourcePath.replace(/\s/g, "%20") + ".availableTemplates.html", function() {
+					$addChildComponentContainer.find("li.template").click(function() {
+						var templatePath = $(this).data("template-path");
+						var node = $(this).closest("li.jstree-node");
+						var treeNodeId = node[0].id;
+						loadNewPageDialog(treeNodeId, templatePath);
+					});
+				});
+			}
+			else
+			{
+				$pageElement.children("div.addChildComponent").remove();
+			}
+		});
+
+		$editLabel.unbind();
+		$editLabel.click(function() {
+			var $pageElement = $(this).closest("li.jstree-node");
+
+			var jstreeReference = $pageTree.jstree(true);
+			jstreeReference.edit($pageElement);
+		});
+
+		$removePage.unbind();
+		$removePage.click(function() {
+			if (confirm("Do you want to delete this page?"))
+			{
+				var jstreeReference = $pageTree.jstree(true);
+
+				var $pageElement = $(this).closest("li.jstree-node");
+				var nodeElement = jstreeReference.get_node($pageElement);
+				var $parentPageElement = $pageElement.parents("li.jstree-node");
+
+				$.get($parentPageElement.attr("id") + ".childpage.delete.json", {name: nodeElement.original.name}, function() {
+					jstreeReference.delete_node($pageElement);
+				}).fail(function() {
+					alert("Error while deleting page node.")
+				});
+			}
+		});
+	}
+
+	var loadNewPageDialog = function(basePath, templatePath) {
+		$pageTree.hide();
+		$newPageDialog.data("basePath", basePath);
+		$newPageDialog.data("templatePath", templatePath);
+		$newPageDialog.load(templatePath.replace(/\s/g, "%20") + ".dialog.html", function() {
+			var titleText = $newPageDialog.find("h1").text();
+			$newPageDialog.find(".dialog h1").text("New " + titleText);
+			$dialogContainer.find(".actionbar .additionalActions").append("<input type='button' name='cancelPageCreation' value='Cancel'>");
+			$dialogContainer.find(".actionbar .additionalActions").append("<input type='button' name='saveNewPage' value='Create Page'>");
+			bindNewPageActions();
+		});
+	}
+
+	var bindNewPageActions = function() {
+		$dialogContainer.find(".actionbar .additionalActions input[name='cancelPageCreation']").click(function() {
+			closeNewPageDialog();
+		});
+		$dialogContainer.find(".actionbar .additionalActions input[name='saveNewPage']").click(function() {
+			var data = dialogData.extractData($newPageDialog);
+			data["basePath"] = $newPageDialog.data("basePath");
+			var templatePath = $newPageDialog.data("templatePath");
+			$.post(templatePath + ".createPage.json", data, function(result) {
+				window.location = result.newPagePath + ".html";
+			});
+		});
+
+	}
+
+	var closeNewPageDialog = function() {
+		$pageTree.show();
+		$newPageDialog.empty();
+		$dialogContainer.find(".actionbar .additionalActions").empty();
+	}
+
+	var init = function() {
+		$dialogContainer = $("#dialogContainer");
+		$pagetreeManager = $dialogContainer.find("dd.pagetreeManager");
+		$pageTree = $pagetreeManager.find(".pageTree");
+		$newPageDialog = $pagetreeManager.find(".newPageDialog");
+		componentResourcePath = $dialogContainer.attr("data-resourcepath");
+		componentResourcePathParts = componentResourcePath.split("/");
+
+		if (componentResourcePathParts.length >= 2)
+		{
+			componentResourcePathParts = componentResourcePathParts.slice(1);
+		}
+		else
+		{
+			showMessage("The path couldn't be resolved.");
+			return;
+		}
+
+		var pathToCurrentPageLoaded = false;
+		var pathToCurrentPageDepth;
+
+		pageJSTree = $pageTree.jstree({
+										  core: {
+											  check_callback: true,
+											  data: loadTreeElement,
+											  check_callback: function(operation, node, node_parent, node_position, parameter) {
+
+												  if (parameter != undefined && parameter.dnd && operation === "move_node")
+												  {
+													  // Will handle the case when the node is dragged at the moment
+
+													  if (node.original.template == undefined || node_parent.original == undefined || !(node.original.availableChildTemplates instanceof Array))
+													  {
+														  return false;
+													  }
+													  else
+													  {
+														  for (availableChildTemplateIndex in node.original.availableChildTemplates)
+														  {
+															  //Check if the demplate, which was used to create the page
+															  var availableChildTemplate = node.original.availableChildTemplates[availableChildTemplateIndex];
+															  if (availableChildTemplate.path == node.original.template)
+															  {
+																  return true;
+															  }
+														  }
+														  return false;
+													  }
+												  }
+												  else if (parameter != undefined && parameter.core && operation === "move_node")
+												  {
+
+													  //Will handle the case that a node was dropped after drag and drop
+													  if (node.parent == node_parent.id)
+													  {
+														  $.get(node_parent.id + ".childPage.changeOrder.json", {node_position: node_position, name: node.original.name})
+													  }
+													  else
+													  {
+														  $.get(node.parent + ".childPage.move.json", {node_position: node_position, name: node.original.name, destinationPath: node_parent.id}, function() {
+															  var newResourcePath = node_parent.id + "/" + node.original.name;
+															  var oldResourcePath = node.id;
+
+															  //Set the ID for the page which was moved
+															  node.original.id = newResourcePath;
+															  $pageTree.jstree(true).set_id(node, newResourcePath);
+
+															  //Set the ID for all child pages
+															  $.each(node.children_d, function(index, childNodeResourcePath) {
+																  var pageTreeNodeRef = $pageTree.jstree(true).get_node(childNodeResourcePath);
+																  var pageTreeNodeNewId = childNodeResourcePath.replace(oldResourcePath, newResourcePath);
+																  pageTreeNodeRef.original.id = pageTreeNodeNewId;
+																  $pageTree.jstree(true).set_id(pageTreeNodeRef, pageTreeNodeNewId);
+
+															  });
+
+															  //Is the current page or a child page currently opened, the URL within the
+															  //address bar has to be adjusted
+															  var pageResourcePath = $("head meta[name='resourcePath']").attr("content");
+															  if (pageResourcePath.indexOf(oldResourcePath) == 0)
+															  {
+																  var currentPath = window.location.pathname;
+																  var newPath = currentPath.replace(oldResourcePath, newResourcePath);
+																  $("head meta[name='resourcePath']").attr("content", newResourcePath);
+																  window.history.replaceState(null, null, newPath);
+															  }
+														  });
+
+
+													  }
+													  nodeMoved = node;
+												  }
+
+												  //All other operation are allowed
+												  return true;
+											  }
+										  },
+										  types: {
+											  default: {
+												  icon: "glyphicon glyphicon-globe"
+											  },
+										  },
+										  dnd: {
+											  copy: false,
+											  check_while_dragging: true
+										  },
+										  plugins: ["wholerow", "types", "dnd"]
+									  }).bind("dblclick.jstree", function(event) {
+			var node = $(event.target).closest("li");
+			var treeNodeId = node[0].id;
+
+			window.location = treeNodeId + ".html";
+		}).bind('loaded.jstree after_open.jstree', function(event, node) {
+			if (pathToCurrentPageDepth == undefined)
+			{
+				pathToCurrentPageDepth = depthRootPath;
+			}
+
+			if (pathToCurrentPageLoaded)
+			{
+				return;
+			}
+
+			if (pathToCurrentPageDepth == (componentResourcePathParts.length - 1))
+			{
+				var branchPath = buildResourcepath(componentResourcePathParts, pathToCurrentPageDepth);
+
+				var $branch = $pageTree.find("li[id='" + branchPath.replace(/\//g, "\\/") + "']");
+
+				pathToCurrentPageLoaded = true;
+
+				$pageTree.jstree("select_node", $branch);
+
+				$pageTree.jstree("open_node", $branch);
+			}
+			else
+			{
+				var branchPath = buildResourcepath(componentResourcePathParts, pathToCurrentPageDepth);
+
+				var $branch = $pageTree.find("li[id='" + branchPath.replace(/\//g, "\\/") + "']");
+
+				$pageTree.jstree("open_node", $branch);
+
+				pathToCurrentPageDepth += 1;
+			}
+		}).bind('ready.jstree open_node.jstree', function(event, node) {
+			addActionsToPages();
+		}).bind('rename_node.jstree', function(event, node) {
+			var newLabel = {
+				"label": node.text
+			}
+
+			$.post(node.node.id + ".modifyProperties.json", newLabel).fail(function(xhr, textStatus, errorThrown) {
+				alert("Error while saving new label.")
+			});
+
+		});
+
+
+		$(document).bind('dnd_stop.vakata', function(event, node) {
+			addActionsToPages();
+		});
+
+	}
+
+	return {
+		init: init
+	}
+});

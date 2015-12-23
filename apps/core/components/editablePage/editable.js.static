@@ -1,0 +1,365 @@
+define(["jquery", "/libs/scripts/dialogData/dialogData.js", "/libs/scripts/contextmenu/context.js"], function($, dialogData, context) {
+	var closedialog = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("div.dialog").addClass('animated slideOutUp').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+			$(document).unbind("keyup", keyhandlerCloseAndSave);
+			$dialogContainer.trigger("closeDialog");
+			$dialogContainer.remove();
+			$("div.editableComponentContainer.edit").removeClass("edit");
+		});
+	}
+
+	var setDialogHeight = function() {
+		var windowHeight = $(window).height();
+		var inputFieldMaxHeight = windowHeight;
+		var $dialogContainer = $("div#dialogContainer");
+
+		if ($dialogContainer.find(".backBar").is(":visible"))
+		{
+			inputFieldMaxHeight -= $dialogContainer.find(".backBar").outerHeight();
+		}
+		inputFieldMaxHeight -= $dialogContainer.find(".actionbar").outerHeight();
+		inputFieldMaxHeight -= $dialogContainer.find("h1").outerHeight() + 20;
+
+		$dialogContainer.find(".inputFields").css({"max-height": inputFieldMaxHeight});
+	}
+
+	var keyHandlerEditablePage = function(keyEvent) {
+		// 'e'-key keycode = 69
+		// 'w'-key keycode = 87
+		// 'w'-key keycode = 82
+		if (keyEvent.ctrlKey && keyEvent.keyCode == 69)
+		{
+			var $editModeButton = $("div#actionbar div.editMode");
+			if ($editModeButton.is(".active"))
+			{
+				activateComponentEditing();
+			}
+			else
+			{
+				deactivateComponentEditing();
+			}
+		}
+		else if (keyEvent.ctrlKey && keyEvent.keyCode == 87)
+		{
+			var resourcePath = $("head meta[name=resourcePath]").attr("content");
+			actionOpenDialog(resourcePath + ".pagetree");
+		}
+		else if (keyEvent.ctrlKey && keyEvent.keyCode == 82)
+		{
+			var resourcePath = $("head meta[name=resourcePath]").attr("content");
+			actionOpenDialog(resourcePath);
+		}
+	}
+
+	var keyhandlerCloseAndSave = function(keyEvent) {
+		var keyCode = (window.event) ? keyEvent.which : keyEvent.keyCode;
+
+		// 'esc'-key keycode = 27
+		// 'enter'-key keycode = 13
+		if (keyEvent.keyCode == 27)
+		{
+			closedialog();
+		}
+		else if (keyEvent.keyCode == 13 && !$(":focus").is("textarea"))
+		{
+			keyEvent.preventDefault();
+			var $dialogContainer = $("div#dialogContainer");
+			var saveButton = $dialogContainer.find("div.actionbar input[name='save']");
+			if (saveButton.is(":focus"))
+			{
+				saveDialogData(function(resultData) {
+					actionSavePostprocess(resultData);
+				});
+			}
+			else
+			{
+				saveButton.focus();
+			}
+		}
+	}
+
+	var actionCloseDialog = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("div.actionbar input[name='cancel']").click(function() {
+			var actionCloseDialogTriggered = jQuery.Event("actionCloseDialog");
+			$dialogContainer.trigger(actionCloseDialogTriggered);
+			if (actionCloseDialogTriggered.isPropagationStopped())
+			{
+				setErrorMessage(actionCloseDialogTriggered.message || "Something whent wrong while storing the dialog result.");
+				return;
+			}
+			else if ($dialogContainer.find(".dialog").data("reloadonclose") == true)
+			{
+				location.reload();
+			}
+			else
+			{
+				closedialog();
+			}
+		});
+	}
+
+	var actionPreviousDialog = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("div.backBar input[name='backToPrevious']").click(function() {
+			saveDialogData(function() {
+				var referrer = $dialogContainer.attr("referrer");
+				$("div.editableComponentContainer.edit").removeClass("edit");
+				$("div.editableComponentContainer[data-resourcepath='" + referrer + "']").addClass("edit");
+				actionOpenDialog(referrer);
+			});
+		});
+	}
+
+	var saveDialogData = function(callback) {
+		var $dialogContainer = $("div#dialogContainer");
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+
+		//Trigger event when the save button is selected
+		var saveTriggered = jQuery.Event("saveTriggered");
+		$dialogContainer.trigger(saveTriggered, {componentPath: resourcePath});
+		if (saveTriggered.isPropagationStopped())
+		{
+			setErrorMessage("Something whent wrong while storing the dialog result.");
+			return;
+		}
+
+		//Process the data from the input fields to be able to store the changes on the server side
+		var data = dialogData.extractData($dialogContainer);
+
+		//Trigger event when the data to be saved is processed
+		$dialogContainer.trigger("saveDataProcessed", {componentPath: resourcePath, data: data});
+
+		//Action to save the input data on the server side
+		$.post(resourcePath + ".modifyProperties.json", data, function(resultData) {
+			if (callback instanceof Function)
+			{
+				callback(resultData);
+			}
+		}).error(function(data) {
+			//Trigger event that the save event wasn't performed successfully
+			$dialogContainer.trigger("savePerformed", {componentPath: resourcePath, error: data});
+
+			//Evaluates the error and shows a proper error message beside the dialog action buttons
+			if (data.status = 401)
+			{
+				setErrorMessage("You're not authorized to save changes.");
+			}
+			else if (datat.status = 500)
+			{
+				setErrorMessage("Something went wrong on the server side.");
+			}
+			else
+			{
+				setErrorMessage("An error occured while you've tried to save.");
+			}
+		});
+	}
+
+	var actionSavePostprocess = function(resultData) {
+		var $dialogContainer = $("div#dialogContainer");
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+
+		//Trigger event that the dialog was saved successfully
+		$dialogContainer.trigger("savePerformed", {componentPath: resourcePath, result: resultData});
+
+		//Check waether the page shall be reloaded or the component content reloaded
+		var reloadPage = $dialogContainer.find("div.dialog").attr("data-reloadonchange") == "true";
+		if (reloadPage)
+		{
+			location.reload();
+		}
+		else
+		{
+			$("div.editableComponentContainer.edit").load(resourcePath.replace(/\s/g, "%20") + ".innerContent.html", function() {
+				var $dialogContainer = $("div#dialogContainer");
+				$dialogContainer.find("div.dialog").addClass('animated slideOutUp').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+					$(document).unbind("keyup", keyhandlerCloseAndSave);
+					$dialogContainer.trigger("closeDialog");
+					$dialogContainer.remove();
+					$("div.editableComponentContainer.edit").removeClass("edit");
+					activateComponentEditing();
+				});
+			});
+		}
+	}
+
+	var actionSaveDialog = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("div.actionbar input[name='save']").click(function() {
+			saveDialogData(function(resultData) {
+				actionSavePostprocess(resultData);
+			});
+		});
+	}
+
+	var setErrorMessage = function(message) {
+		var $dialogContainer = $("div#dialogContainer");
+		var $errorMessage = $dialogContainer.find(".actionbar .errorMessage");
+		$errorMessage.text(message);
+	}
+
+	var removeSelectorFromResourcePath = function(resourcepath) {
+		var positionComponentNameStarts = resourcepath.lastIndexOf("/");
+		var positionSelectorIsPlaced = resourcepath.lastIndexOf(".");
+		//When there is a selector set it will be removed from the resource path
+		if (positionSelectorIsPlaced != -1 && positionSelectorIsPlaced > positionComponentNameStarts)
+		{
+			resourcepath = resourcepath.substring(0, positionSelectorIsPlaced);
+		}
+
+		return resourcepath;
+	}
+
+	var actionOpenDialog = function(resourcepath, referrer) {
+		var dialogPath = resourcepath + ".dialog.html";
+
+		$("div#dialogContainer").remove();
+
+		var $dialogContainer = $("<div id='dialogContainer'></div>");
+		$dialogContainer.attr("data-resourcepath", removeSelectorFromResourcePath(resourcepath));
+		if (referrer)
+		{
+			$dialogContainer.attr("referrer", referrer);
+			$dialogContainer.addClass("withReferrer")
+		}
+		$dialogContainer.appendTo("body");
+
+		$dialogContainer.load(dialogPath.replace(/\s/g, "%20"), function() {
+			$dialogContainer.find("div.dialog").addClass('animated slideInDown');
+
+			actionCloseDialog();
+			actionSaveDialog();
+			actionPreviousDialog();
+			setDialogHeight();
+			$(window).unbind("resize", setDialogHeight);
+			$(window).bind("resize", setDialogHeight);
+			$(document).unbind("keyup", keyhandlerCloseAndSave);
+			$(document).bind("keyup", keyhandlerCloseAndSave);
+		});
+	}
+
+	var bindMenuTrigger = function() {
+		$("div#actionbar div.actionMenu").click(function() {
+			$("div#actionbar div.editMenuItem").toggleClass("visible");
+			$("div#actionbar div.actionMenuBackground").toggleClass("visible");
+		});
+		$("div#actionbar div.editMenu").click(function() {
+			var resourcePath = $("head meta[name=resourcePath]").attr("content");
+			actionOpenDialog(resourcePath);
+		});
+		$("div#actionbar div.pagetree").click(function() {
+			var resourcePath = $("head meta[name=resourcePath]").attr("content");
+			actionOpenDialog(resourcePath + ".pagetree");
+		});
+		$("div#actionbar div.editMode").click(function() {
+			if ($(this).is(".active"))
+			{
+				activateComponentEditing();
+			}
+			else
+			{
+				deactivateComponentEditing();
+			}
+		});
+	}
+
+	var deactivateComponentEditing = function() {
+		$("div#actionbar div.editMode").addClass("active");
+		$("div#actionbar div.editMode .glyphicon").removeClass("glyphicon-eye-close");
+		$("div#actionbar div.editMode .glyphicon").addClass("glyphicon-eye-open");
+
+		var $editableComponentContainer = $("div.editableComponentContainer");
+		$("body").removeClass("editActive");
+		var $editable = $editableComponentContainer.find(".editable");
+		$editable.unbind('dblclick');
+		//Deactivate context menu
+		context.attach('div.editableComponentContainer .editable');
+		closedialog();
+	}
+
+	var activateComponentEditing = function($editable) {
+		$("div#actionbar div.editMode").removeClass("active");
+		$("div#actionbar div.editMode .glyphicon").addClass("glyphicon-eye-close");
+		$("div#actionbar div.editMode .glyphicon").removeClass("glyphicon-eye-open");
+
+		var $editableComponentContainer = $("div.editableComponentContainer");
+		$("body").addClass("editActive");
+		var $editable = $editableComponentContainer.find(".editable");
+		$editable.unbind('dblclick');
+		$editable.dblclick(function(event, data) {
+			data = data || {};
+			var $editableComponentContainer = $(this).closest("div.editableComponentContainer");
+			$("div.editableComponentContainer.edit").removeClass("edit");
+			$editableComponentContainer.addClass("edit");
+			var resourcepath = $editableComponentContainer.attr("data-resourcepath");
+			actionOpenDialog(resourcepath, data.referrer);
+		});
+		activateContextMenu($editable);
+	}
+
+	var activateContextMenu = function($editable) {
+		var contextMenuOptions = [
+			{header: 'Component Options'},
+			{text: 'Edit', action: function(event, data) {
+				var $editable = $(this).closest("ul").data("context-menu-referrer");
+				var $editableComponentContainer = $editable.closest("div.editableComponentContainer");
+				$("div.editableComponentContainer.edit").removeClass("edit");
+				$editableComponentContainer.addClass("edit");
+				var resourcepath = $editableComponentContainer.attr("data-resourcepath");
+				actionOpenDialog(resourcepath);
+			}
+			}
+		];
+		var contextMenuOptionsWithDelete = $.extend([], contextMenuOptions);
+		contextMenuOptionsWithDelete.push({text: 'Delete', action: function(event, data) {
+			if (confirm("This component will be deleted when you save."))
+			{
+				var $editable = $(this).closest("ul").data("context-menu-referrer");
+				var $component = $editable.parent();
+				var resourcename = $component.attr("data-resourcename");
+				var $componentContainer = $editable.parents().eq(3);
+				var resourcePath = $componentContainer.attr("data-resourcePath");
+
+				$.post(resourcePath + ".deleteChild.json", {childName: resourcename}, function() {
+					$component.closest("li.containerItem").remove();
+				});
+			}
+		}
+										  });
+		$editable.each(function(index) {
+			var $editable = $(this);
+			var $componentContainer = $editable.parents().eq(3);
+			var componentIsPartOfContainer = $componentContainer.hasClass("editableComponentContainer");
+			if (componentIsPartOfContainer)
+			{
+				context.attach($editable, contextMenuOptionsWithDelete);
+			}
+			else
+			{
+				context.attach($editable, contextMenuOptions);
+			}
+		});
+	}
+
+	var loadActionBar = function() {
+		var $actionbar = $("<div id='actionbar'></div>");
+		var pageResourcePath = $("head meta[name='resourcePath']").attr("content");
+		$actionbar.appendTo("body");
+		$actionbar.load(pageResourcePath.replace(/\s/g, "%20") + ".actionbar.html", function() {
+			bindMenuTrigger();
+			activateComponentEditing();
+		});
+	}
+
+	context.init({preventDoubleContext: false});
+	context.settings({compress: true});
+	loadActionBar();
+	$(document).bind("keyup", keyHandlerEditablePage);
+
+	return {
+		activateComponentEditing: activateComponentEditing,
+		deactivateComponentEditing: deactivateComponentEditing
+	}
+});

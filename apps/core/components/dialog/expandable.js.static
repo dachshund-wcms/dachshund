@@ -1,0 +1,20 @@
+define(["jquery"], function($) {
+
+	var init = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		var $expandableHeader = $dialogContainer.find("dt.expandable");
+		$expandableHeader.unbind();
+		$expandableHeader.click(function() {
+			var $expandableHeader = $(this);
+			var $expandableContent = $expandableHeader.siblings("dd.expandable");
+
+			$expandableHeader.toggleClass("expanded");
+			$expandableContent.toggleClass("expanded");
+		})
+	}
+
+	return {
+		init: init
+	}
+
+});

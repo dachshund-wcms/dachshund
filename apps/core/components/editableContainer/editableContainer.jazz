@@ -1,0 +1,3 @@
+<div class="componentContainer editableComponentContainer {component.componentResource.name} {if component.superComponent}{component.superComponent.componentResource.name}{end}"
+     data-resourcePath="{resource.path}" data-resourceName="{resource.name}">{includeScript("innerContent.html.jazz")}
+</div>

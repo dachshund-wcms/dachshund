@@ -1,0 +1,30 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Richtext Dialog",
+		"richtextEditor": {
+			"input": "richtextEditor",
+			"property": "html",
+			"label": "Richtext",
+			"toolbar": null,
+			"description": "This text will be displayed in the way how it is formatted in this editor."
+		},
+		"c_options": {
+			"input": "expandable",
+			"label": "Upload and Select Images",
+			"description": "",
+			"elements": {
+				"multiimage": {
+					"input": "multiimage",
+					"property": "images",
+					"label": "",
+					"description": "Drag and drop images here to add them subsequently to the text.",
+					"addImageModule": "/apps/core/components/dialog.richtextEditor.js",
+					"addImageInstance": "richtextEditor"
+				}
+			}
+		}
+	}
+}

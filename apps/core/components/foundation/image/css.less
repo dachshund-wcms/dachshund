@@ -1,0 +1,17 @@
+body.editActive {
+  .componentContainer.image {
+    .imagePlaceholder {
+      font-size: 80px;
+      color: #bbbbbb;
+      text-align: center;
+    }
+  }
+}
+
+body:not(.editActive) {
+  .componentContainer.image {
+    .imagePlaceholder {
+      display: none;
+    }
+  }
+}

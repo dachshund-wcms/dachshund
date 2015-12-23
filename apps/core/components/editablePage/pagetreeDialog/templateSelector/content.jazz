@@ -1,0 +1,6 @@
+<div class="label">Available Templates</div>
+<ul class="templateList">
+    {foreach template in properties.availableTemplates}
+    {includeComponent(template.path, "/apps/core/components/template", "selection")}
+    {end}
+</ul>

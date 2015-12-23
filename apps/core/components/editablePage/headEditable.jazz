@@ -1,0 +1,12 @@
+<link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+      rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="/libs/styles/bootstrap/glyphicons.css" type="text/css" charset="utf-8">
+{if component.req.attributes.editMode}
+<link href="/libs/styles/animate/animate.css" rel="stylesheet" type="text/css">
+<link href="{resource.path}.editable.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+    require(["{component.componentResource.path}.editable.js"]);
+</script>
+{end}

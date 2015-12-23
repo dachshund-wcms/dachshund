@@ -1,0 +1,16 @@
+{includeScript("editable.jazz")}{includeScript("content.jazz")}
+{if properties.deactivateScript neq "true"}
+<script type="text/javascript">
+
+    {
+        includeScript("script.static")
+    }
+    ("{component.componentResource.path}.js");
+
+    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss)
+        {{
+            loadCss.loadStyle("{component.componentResource.path}.css");
+        }}
+    );
+</script>
+{end}

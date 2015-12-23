@@ -1,0 +1,27 @@
+<dt class="image">{parameter.element.label}</dt>
+<dd class="image">
+    <input type="hidden" data-property="{parameter.element.property}" name="{parameter.name}" value="{parameter.value}">
+
+    <div class="imageElement">
+        <div class="droparea" data-maxnumberoffiles="1" data-uploadedfiles="0">
+            <div class="hint">
+
+                <div>Upload Image here</div>
+            </div>
+            <input type="file" name="imageSelection">
+        </div>
+    </div>
+    <div class="description">{parameter.element.description}</div>
+    <script type="text/javascript">
+        require(["/apps/core/components/dialog.image.js"], function(imageDialog) {
+            {
+                imageDialog.init()
+            }
+        });
+        require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {
+            {
+                loadCss.loadStyle("/apps/core/components/dialog.image.css");
+            }
+        });
+    </script>
+</dd>

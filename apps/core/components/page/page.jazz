@@ -1,0 +1,9 @@
+<!DOCTYPE HTML>
+{if properties.includeManifest}
+<html manifest="{resource.path}.manifest">
+{else}
+<html>
+{end}
+{includeScript("head.jazz")}
+{includeScript("body.jazz")}
+</html>

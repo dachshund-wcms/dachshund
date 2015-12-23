@@ -1,0 +1,22 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="resourcePath" content="{resource.path}">
+    <meta name="resourceName" content="{resource.name}">
+    {if resource.properties.description}
+    <meta name="description" content="{resource.properties.description}"/>
+    {end}
+    {if resource.properties.keywords}
+    <meta name="keywords" content="{resource.properties.keywords}"/>
+    {end}
+    {if resource.properties.author}
+    <meta name="author" content="{resource.properties.author}"/>
+    {end}
+
+    {includeScript("pagetitle.jazz")}
+    {includeScript("headScripts.jazz")}
+    {includeScript("headStyles.jazz")}
+    {includeScript("headEditable.jazz")}
+    {if properties.includeManifest}
+    {includeScript("manifest-appcache-script-include.static")}
+    {end}
+</head>

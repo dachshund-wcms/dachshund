@@ -1,0 +1,5 @@
+<div class="col-md-4">
+    <h2>{properties.title}</h2>
+    <p>{properties.description}</p>
+    <p><a class="btn btn-default" href="{properties.link}" role="button">View details &raquo;</a></p>
+</div>

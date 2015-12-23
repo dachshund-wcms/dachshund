@@ -1,0 +1,71 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Image Dialog",
+		"a_image": {
+			"input": "image",
+			"property": "imageFile",
+			"label": "Image"
+		},
+		"b_alt": {
+			"input": "text",
+			"property": "imageAlt",
+			"label": "Alt-Text",
+			"description": "Alternative text which is displayed when the picture can't be loaded."
+		},
+		"c_title": {
+			"input": "text",
+			"property": "imageTitle",
+			"label": "Image Title",
+			"description": "This text is shown as tooltip on the image."
+		},
+		"c_options": {
+			"input": "expandable",
+			"label": "Further Options",
+			"description": "like width and height",
+			"elements": {
+				"a_width": {
+					"input": "text",
+					"property": "width",
+					"label": "Width",
+					"description": "Width of the image in pixel"
+				},
+				"b_height": {
+					"input": "text",
+					"property": "height",
+					"label": "Height",
+					"description": "Height of the image in pixel"
+				},
+				"c_size": {
+					"input": "radio",
+					"property": "size",
+					"label": "Image Size",
+					"description": "Define if the image should be resized",
+					"options": [
+						{
+							"name": "No Resizing",
+							"value": "none",
+							"default": true
+						},
+						{
+							"name": "Minimum Size",
+							"value": "min"
+						},
+						{
+							"name": "Maximum Size",
+							"value": "max"
+						}
+					]
+				},
+				"d_class": {
+					"input": "text",
+					"property": "class",
+					"label": "Image Class",
+					"description": "The class definition is used to apply a certain css style"
+				}
+			}
+		}
+	}
+}

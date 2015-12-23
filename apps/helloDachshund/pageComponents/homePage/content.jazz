@@ -1,0 +1,11 @@
+{includeComponent('./.content/jumbotron')}
+
+<div class="container">
+    <div class="row">
+        {foreach subHeadingResource in properties.subHeadingResources}
+            {includeComponent(subHeadingResource.path)}
+        {end}
+    </div>
+
+    {includeScript('footer.jazz')}
+</div>

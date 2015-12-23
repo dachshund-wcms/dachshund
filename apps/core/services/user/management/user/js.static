@@ -1,0 +1,31 @@
+define(["jquery"], function($) {
+
+	var $userComponent = null;
+
+	var init = function() {
+		$userComponent = $(".container.user");
+
+		initTrigger();
+	}
+
+	var initTrigger = function() {
+		$userComponent.find(".header").unbind();
+		$userComponent.find(".header").click(function() {
+			var $content = $(this).siblings(".content");
+			if ($userComponent.find(".content:visible").length > 0)
+			{
+				$userComponent.find(".content:visible").slideUp("fast");
+				$content.slideDown("fast");
+			}
+			else
+			{
+				$content.slideDown("fast");
+			}
+		});
+	}
+
+	return {
+		init: init
+	}
+
+});

@@ -1,0 +1,5 @@
+<!DOCTYPE HTML>
+<html>
+{includeScript("editModeHead.jazz")}
+{includeScript("editModeBody.jazz")}
+</html>

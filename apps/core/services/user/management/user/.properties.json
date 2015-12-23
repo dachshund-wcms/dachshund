@@ -1,0 +1,5 @@
+{
+	"type": "component",
+	"componentPath": "SELF",
+	"superComponent": "/apps/core/components/container"
+}

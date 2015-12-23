@@ -1,0 +1,10 @@
+{
+	"allow": {
+		"read": ["/home/users/anonymous"]
+	},
+	"deny": {
+		
+	}
+}
+
+

@@ -1,0 +1,78 @@
+define(["jquery", "/libs/scripts/jquery-cookie/jquery.cookie.js"], function($) {
+
+	var init = function() {
+		$(".editModeButton").click(function() {
+			var $editModeControl = $(this).closest(".editMode");
+			if ($editModeControl.hasClass("enabled"))
+			{
+				if ($editModeControl.hasClass("active"))
+				{
+					$.cookie("EDITMODE", "off");
+				}
+				else
+				{
+					$.cookie("EDITMODE", "on");
+				}
+
+				setEditModeFromCookie();
+			}
+		});
+
+		$("#loginform input[name='login']").click(function(event) {
+			event.preventDefault();
+			var $formMessage = $("#loginform .message");
+			var username = $("#loginform input[name='username']").val();
+			var password = $("#loginform input[name='password']").val();
+
+			if (username == "")
+			{
+				$formMessage.text("No username is set");
+				$("#loginform input[name='username']").focus();
+			}
+			else if (password == "")
+			{
+				$formMessage.text("No password is set");
+				$("#loginform input[name='password']").focus();
+			}
+			else
+			{
+				$.get("/apps/core/services/user/authenticate.html", {username: username, password: password}, function() {
+					$(".editMode").addClass("enabled");
+					$(".login").removeClass("active");
+					setEditModeFromCookie();
+				}).fail(function(xhr, textStatus, errorThrown) {
+					if (xhr.status == 401)
+					{
+						$formMessage.text("Wrong credentials");
+					}
+					else if (xhr.status == 500)
+					{
+						$formMessage.text("Server Error");
+					}
+					else
+					{
+						$formMessage.text("Request error");
+					}
+				});
+			}
+		});
+
+		var setEditModeFromCookie = function() {
+			var $editModeControl = $(".editMode");
+			if ($.cookie("EDITMODE") == "on")
+			{
+				$editModeControl.addClass("active");
+			}
+			else
+			{
+				$editModeControl.removeClass("active");
+			}
+		}
+	}
+
+	init();
+	return {
+		init: init
+	}
+
+});

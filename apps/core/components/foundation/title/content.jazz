@@ -1,0 +1,5 @@
+{if properties.title}
+<{properties.size} title="{properties.tooltip}">{properties.title}</{properties.size}>
+{else}
+<h1><i>There is no title defined</i></h1>
+{end}

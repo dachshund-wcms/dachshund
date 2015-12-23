@@ -1,0 +1,78 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "YouTube Video Dialog",
+		"videoID": {
+			"input": "text",
+			"label": "Video ID",
+			"property": "videoID",
+			"description": "The ID of the YouTube video e.g. 'https://www.youtube.com/watch?v=m6nSXC938Ws' ID: 'm6nSXC938Ws'"
+		},
+		"size": {
+			"input": "dropdown",
+			"label": "Size",
+			"property": "size",
+			"description": "Size of the video",
+			"options": [
+				{
+					"name": "480 × 360",
+					"value": "medium"
+				},
+				{
+					"name": "640 × 480",
+					"value": "large"
+				},
+				{
+					"name": "960 × 720",
+					"value": "hd720"
+				},
+				{
+					"name": "Custom Size",
+					"value": "custom"
+				}
+			]
+		},
+		"customWidth": {
+			"input": "text",
+			"label": "Custom Width",
+			"property": "customWidth",
+			"description": "When you selected custom size this value will be applied. Enter only numbers without unit."
+		},
+		"customHeight": {
+			"input": "text",
+			"label": "Custom Height",
+			"property": "customHeight",
+			"description": "When you selected custom size this value will be applied. Enter only numbers without unit."
+		},
+		"showInfo": {
+			"input": "checkbox",
+			"label": "Show Video Info",
+			"property": "showinfo",
+			"value": true,
+			"description": "Shows video information which are displayed at the top of the player"
+		},
+		"showcontrols": {
+			"input": "checkbox",
+			"label": "Show Controls",
+			"property": "showcontrols",
+			"value": true,
+			"description": "Shows the controls at the bottom of player"
+		},
+		"autohide": {
+			"input": "checkbox",
+			"label": "Autohide Controls",
+			"property": "autohideControls",
+			"value": false,
+			"description": "Hides the controls at the bottom of player when they're not used"
+		},
+		"autoplay": {
+			"input": "checkbox",
+			"label": "Autoplay Video",
+			"property": "autoplayVideo",
+			"value": false,
+			"description": "Start playing the video at the point of time the video is loaded"
+		}
+	}
+}

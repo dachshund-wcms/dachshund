@@ -1,0 +1,102 @@
+#jstree-dnd {
+  font-family: "Open Sans", sans-serif !important;
+  font-size: 0.8em;
+}
+
+div#dialogContainer div.dialog {
+
+  dt.pagetreeManager {
+    display: none;
+  }
+
+  dd.pagetreeManager {
+    margin-left: 8px;
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .message {
+      color: red;
+    }
+
+    .pageTree {
+
+      .addChildComponent {
+        margin-left: 51px;
+      }
+
+      div.actions {
+        float: right;
+        display: none;
+        margin-right: 4px;
+
+        span.addChildPage {
+          position: relative;
+
+          .star {
+            position: absolute;
+            left: 0;
+            color: red;
+          }
+        }
+
+        span {
+          margin-left: 8px;
+          color: rgba(0, 0, 0, 0.5);
+          cursor: pointer;
+
+          &:hover {
+            color: black;
+          }
+        }
+      }
+
+      .jstree-wholerow-hovered {
+        div.actions {
+          display: block;
+        }
+      }
+
+    }
+
+    .newPageDialog {
+      .templateTitle {
+        float: right;
+        position: relative;
+        z-index: 100;
+        font-size: 20px;
+        margin-left: 0;
+        font-weight: 200;
+        margin-top: 11px;
+        font-style: italic;
+      }
+
+      .dialog {
+        position: relative;
+        top: auto;
+        background-image: none;
+        border: 0;
+        font-size: 1.0em;
+
+        -moz-box-shadow: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        width: 700px;
+        padding-left: 0px;
+
+        h1 {
+          font-size: 20px;
+          margin-left: 0;
+        }
+
+        .actionbar {
+          display: none;
+        }
+
+      }
+    }
+  }
+}

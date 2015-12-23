@@ -1,0 +1,37 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Component Container",
+		"a_componentManager": {
+			"input": "containerManager",
+			"property": "components",
+			"label": "Components",
+			"description": "Drag and Drop components to rearrange their position",
+			"components": [
+				{
+					"name": "Title Component",
+					"respourcepath": "/apps/core/components/foundation/title"
+				},
+				{
+					"name": "Richtext Component",
+					"respourcepath": "/apps/core/components/foundation/richtext"
+				},
+				{
+					"name": "Markdown Text Component",
+					"respourcepath": "/apps/core/components/foundation/markdownText"
+				},
+				{
+					"name": "Image Component",
+					"respourcepath": "/apps/core/components/foundation/image"
+				},
+
+				{
+					"name": "YouTube Component",
+					"respourcepath": "/apps/core/components/foundation/youtube"
+				}
+			]
+		}
+	}
+}

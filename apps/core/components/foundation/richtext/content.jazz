@@ -1,0 +1,5 @@
+{if properties.html}
+{properties.html}
+{else}
+<h1><i>There is no richtext defined</i></h1>
+{end}

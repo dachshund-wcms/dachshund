@@ -1,0 +1,164 @@
+define(["jquery", "/libs/scripts/ckeditor/ckeditor.js", "/libs/scripts/imageUtils/imageUtils.js"], function($, ckeditor, ImageUtils) {
+
+	var editorInstances = {}, defaultToolbar = [
+			{ "name": "clipboard", "items": [ "Cut", "Copy", "Paste", "PasteText", "-", "Undo", "Redo" ] },
+			{ "name": "paragraph", "items": [ "NumberedList", "BulletedList", "-", "Outdent", "Indent", "-", "Blockquote", "-", "JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock", "-", "BidiLtr", "BidiRtl" ] },
+			{ "name": "links", "items": [ "Link", "Unlink", "Anchor" ] },
+			{ "name": "basicstyles", "items": [ "Bold", "Italic", "Underline", "Strike", "Subscript", "Superscript", "-", "RemoveFormat" ] },
+			{ "name": "insert", "items": [ "Image", "HorizontalRule", "SpecialChar" ] },
+			{ "name": "styles", "items": [ "Format" ] },
+			{ "name": "tools", "items": [ "Maximize", "ShowBlocks" ] }
+		];
+
+	var RichtextEditor = function($richtextEditor) {
+		this.$richtextEditor = $richtextEditor;
+		this.$dialogContainer = $("div#dialogContainer");
+		this.componentPath = this.$dialogContainer.attr("data-resourcepath");
+		this.editorID = this.$richtextEditor.data("editor-id");
+		this.propertyName = this.$richtextEditor.data("property");
+		this.ckeditorInstance = null;
+		this.toolbar = defaultToolbar;
+		this.loadToolbar();
+		this.initializeCKeditor();
+		editorInstances[this.propertyName] = this;
+	}
+
+	RichtextEditor.prototype.loadToolbar = function() {
+		var TOOLBAR_DATA_PROPERTY = "toolbar";
+
+		if (this.$richtextEditor.data(TOOLBAR_DATA_PROPERTY) != undefined && this.$richtextEditor.data(TOOLBAR_DATA_PROPERTY).length > 0)
+		{
+			try
+			{
+				var toolbar = JSON.parse(this.$richtextEditor.data(TOOLBAR_DATA_PROPERTY));
+
+				if (!(toolbar instanceof Array))
+				{
+					throw("Given toolbar is not an array.");
+				}
+
+				this.toolbar = toolbar;
+			} catch (exception)
+			{
+				console.log("Error while loading toolbar [" + this.$richtextEditor.data("toolbar") + "] Message: " + JSON.toString(exception));
+			}
+		}
+	}
+
+	RichtextEditor.prototype.initializeCKeditor = function() {
+		var toolbar = this.toolbar;
+		this.ckeditorInstance = CKEDITOR.replace(this.editorID, {
+			toolbar: toolbar
+		});
+	}
+
+	RichtextEditor.prototype.copyEditorDataToRichtext = function() {
+		var richtextEditorContent = this.ckeditorInstance.getData();
+		this.$richtextEditor.find("#" + this.editorID).val(richtextEditorContent);
+	}
+
+	RichtextEditor.prototype.addImage = function(image) {
+		//Resize the image to ensure that the image isn't displayed with its full resolution
+		var imageUtils = new ImageUtils(image.path);
+		var ckeditorInstance = this.ckeditorInstance;
+		imageUtils.requestImageDimensions(function(err, metadata) {
+			if (err)
+			{
+				alert("Error while adding image to richtext editor.");
+			}
+			else
+			{
+				var maxImageDimension = {width: 400, height: 400};
+				if (maxImageDimension.width > metadata.width && maxImageDimension.height > metadata.height)
+				{
+					maxImageDimension = metadata;
+				}
+
+				var imageDimension = imageUtils.getProcessedImageDimension(maxImageDimension);
+				var imagePath = imageUtils.getProcessedImagePath(maxImageDimension);
+
+				var imageWidth = "width='" + imageDimension.width + "'";
+				var imageHeight = "height='" + imageDimension.height + "'";
+				var dataOriginalWidth = "data-original-width='" + metadata.width + "'";
+				var dataOriginalHeight = "data-original-height='" + metadata.height + "'";
+
+				ckeditorInstance.insertHtml("<img " + imageHeight + " " + imageWidth + " " + dataOriginalWidth + " " + dataOriginalHeight + " src='" + imagePath + "'>");
+			}
+		});
+	}
+
+	RichtextEditor.prototype.isImageUsed = function(image) {
+		var imageIsUsed = false;
+		var imageTags = this.ckeditorInstance.document.getElementsByTag("img");
+		$.each(imageTags.$, function(index, imageTag) {
+			var imagePath = imageTag.dataset.ckeSavedSrc;
+
+			if (imagePath == undefined)
+			{
+				return true;
+			} //Continue with next element when the image path is not set
+
+			var imageUtils = new ImageUtils(imagePath);
+
+			if (imageUtils.getImagePath() == image.path)
+			{
+				imageIsUsed = true;
+
+				//Break 'each'-loop by returning false
+				return false;
+			}
+		});
+		return imageIsUsed;
+	}
+
+	var cleanupDataOnClose = function() {
+		editorInstances = {};
+	}
+
+	var copyEditorDataToRichtext = function() {
+		for (editorInstanceName in editorInstances)
+		{
+			var editorInstance = editorInstances[editorInstanceName];
+			editorInstance.copyEditorDataToRichtext();
+		}
+	}
+
+	var addImage = function(image, reference) {
+		if (editorInstances[reference] == undefined)
+		{
+			throw("There is no richtext editor with the reference [" + reference + "]");
+		}
+
+		editorInstances[reference].addImage(image);
+	}
+
+	var isImageUsed = function(image, reference) {
+		if (editorInstances[reference] == undefined)
+		{
+			throw("There is no richtext editor with the reference [" + reference + "]");
+		}
+
+		return editorInstances[reference].isImageUsed(image);
+	}
+
+	var init = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		$dialogContainer.find("dd.richtextEditor").each(function(index, element) {
+			var $richtext = $(element);
+			if ($richtext.data("controller") == undefined)
+			{
+				$richtext.data("controller", new RichtextEditor($richtext));
+			}
+		});
+
+		$dialogContainer.unbind(copyEditorDataToRichtext);
+		$dialogContainer.bind("saveTriggered", copyEditorDataToRichtext);
+		$dialogContainer.bind("closeDialog", cleanupDataOnClose);
+	}
+
+	return {
+		init: init,
+		addImage: addImage,
+		isImageUsed: isImageUsed
+	}
+});

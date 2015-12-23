@@ -1,0 +1,15 @@
+<dt class="pagetreeManager"></dt>
+<dd class="pagetreeManager">
+    <div class="pageTree"></div>
+    <ul class="pageList"></ul>
+    <div class="message"></div>
+    <div class="newPageDialog"></div>
+</dd>
+<script type="text/javascript">
+    require(["/apps/core/components/editablePage/pagetreeDialog.pagetreeManager.js"], function(containerManager) {{
+            containerManager.init()
+        }});
+    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {{
+            loadCss.loadStyle("/apps/core/components/editablePage/pagetreeDialog.pagetreeManager.css");
+        }});
+</script>

@@ -1,0 +1,8 @@
+<dt>{parameter.element.label}</dt>
+<dd>
+    <textarea
+            data-property="{parameter.element.property}"
+            name="{parameter.name}"
+    {if parameter.element.rows}rows="{parameter.element.rows}"{end}>{parameter.value}</textarea>
+    <div class="description">{parameter.element.description}</div>
+</dd>

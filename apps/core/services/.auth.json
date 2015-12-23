@@ -1,0 +1,8 @@
+{
+	"allow": {
+		"read": ["/home/groups/everyone"]
+	},
+	"deny": {
+
+	}
+}

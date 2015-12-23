@@ -1,0 +1,13 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Page Manager",
+		"reloadPageOnClose": true,
+		"closeOnly": true,
+		"pagetreeManager": {
+			"input": "pagetreeManager"
+		}
+	}
+}

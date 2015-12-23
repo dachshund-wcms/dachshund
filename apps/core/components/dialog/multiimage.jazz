@@ -1,0 +1,29 @@
+<dt class="multiimage fullrow">{parameter.element.label}</dt>
+<dd class="multiimage fullrow" data-image-reference-module="{parameter.element.addImageModule}"
+    data-image-reference-name="{parameter.element.addImageInstance}" data-property="{parameter.element.property}">
+    <input class="imageNames" type="hidden" data-property="{parameter.element.property}" name="{parameter.name}"
+           value='{@toJson(parameter.value)}'>
+
+    <div class="imageElements droparea">
+        <ul class="imagelist">
+            <li class="upload"><span class="glyphicon glyphicon-cloud-upload"></span>
+
+                <div>Select Files</div>
+            </li>
+        </ul>
+        <input type="file" name="imageSelection" multiple>
+    </div>
+    <div class="description">{parameter.element.description}</div>
+    <script type="text/javascript">
+        require(["/apps/core/components/dialog.multiimage.js"], function(multiimage) {
+            {
+                multiimage.init();
+            }
+        });
+        require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {
+            {
+                loadCss.loadStyle("/apps/core/components/dialog.multiimage.css");
+            }
+        });
+    </script>
+</dd>

@@ -1,0 +1,17 @@
+<dt class="expandable" title="Click to expand or collapse">
+<h2><span class="glyphicon glyphicon-chevron-right"></span><span class="glyphicon glyphicon-chevron-down"></span>{parameter.element.label}
+    {if parameter.element.description}
+    <small>- {parameter.element.description}</small>
+    {end}
+</h2></dt>
+<dd class="expandable">
+    <dl>
+        {foreach dialogEntry in parameter.dialogEntries}
+        {includeScript(dialogEntry.script, dialogEntry)}
+        {end}
+    </dl>
+</dd>
+<script type="text/javascript">require(["/apps/core/components/dialog.expandable.js"], function(expandable) {{
+        expandable.init()
+    }})
+</script>

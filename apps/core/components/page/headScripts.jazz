@@ -1,0 +1,13 @@
+<!-- Javascript includes, which are defined in the page head -->
+<script src="/libs/scripts/requirejs/require-jquery.js"></script>
+
+<script type="text/javascript">
+    (function(pageScriptPath) {{
+            require(["jquery", pageScriptPath], function($, pageScript) {{
+                    if (pageScript != null && pageScript.init != undefined)
+                    {{
+                        pageScript.init();
+                    }}
+                }});
+        }})("{component.componentResource.path}.js");
+</script>

@@ -1,0 +1,241 @@
+define(["jquery", "/libs/scripts/jquery-ui/jquery-ui-1.10.4.min.js", "/libs/scripts/jquery-scrollTo/jquery-scrollTo.js"], function($) {
+
+	var clearSelectedItems = function() {
+		$matchingComponent = $("div.editableComponentContainer li.containerItem.selected");
+		$matchingComponent.removeClass("selected");
+	}
+
+	var initRemoveTrigger = function($dialogContainer) {
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $containerManager = $dialogContainer.find("dd.containerManager");
+		var $componentList = $containerManager.find("ul.containerElements");
+
+		var $deleteActions = $componentList.find("li .actions .remove");
+		$deleteActions.unbind();
+		$deleteActions.click(function() {
+			var $component = $(this).closest("li");
+
+			if ($component.hasClass("newComponent"))
+			{
+				$component.remove();
+				rebuildComponentList($dialogContainer);
+			}
+			else
+			{
+				if (confirm("This component will be deleted when you save."))
+				{
+					var componentsToBeDeleted = $componentList.data("components-to-be-deleted") || [];
+					componentsToBeDeleted.push($component.attr("name"));
+					$component.remove();
+					rebuildComponentList($dialogContainer);
+					$componentList.data("components-to-be-deleted", componentsToBeDeleted);
+				}
+			}
+		});
+	}
+
+	var initGotoTrigger = function($dialogContainer) {
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $containerManager = $dialogContainer.find("dd.containerManager");
+		var $componentList = $containerManager.find("ul.containerElements");
+
+		var $gotoActions = $componentList.find("li .actions .goto");
+		$gotoActions.unbind();
+		$gotoActions.click(function() {
+			var $selectedComponent = $(this).closest("li");
+			var componentPath = $selectedComponent.attr("data-resourcepath");
+			$matchingComponent = $("div.editableComponentContainer li.containerItem[data-resourcepath='" + componentPath + "']");
+			$.scrollTo($matchingComponent, 200, {easing: 'swing'});
+		});
+	}
+
+	var initOpenDialog = function($dialogContainer) {
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $containerManager = $dialogContainer.find("dd.containerManager");
+		var $componentList = $containerManager.find("ul.containerElements");
+
+		$componentList.find("li.instantiatedComponent").dblclick(function() {
+			var $selectedComponent = $(this);
+			var componentResourcePath = $selectedComponent.attr("data-resourcepath");
+			$matchingComponent = $("div.editableComponentContainer li.containerItem[data-resourcepath='" + componentResourcePath + "']");
+			clearSelectedItems();
+			$.scrollTo($matchingComponent, 200, {easing: 'swing'});
+			$matchingComponent.find("div.editableContainer div.editable").trigger("dblclick", {referrer: resourcePath});
+		});
+	}
+
+	var rebuildComponentList = function($dialogContainer) {
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $containerManager = $dialogContainer.find("dd.containerManager");
+		var $componentList = $containerManager.find("ul.containerElements");
+
+		var components = [];
+
+		$componentList.find("li.instantiatedComponent, li.newComponent").each(function(index, element) {
+			var $componentListitem = $(this);
+			$componentListitem.find(".number").text((index + 1) + ".");
+			components.push($componentListitem.attr("name"));
+		});
+
+		if ($componentList.find("li.instantiatedComponent, li.newComponent").length == 0)
+		{
+			$componentList.find(".placeholder").show();
+		}
+		else
+		{
+			$componentList.find(".placeholder").hide();
+		}
+
+		$containerManager.find("input").val(JSON.stringify(components));
+	}
+
+	var init = function() {
+		var $dialogContainer = $("div#dialogContainer");
+		var resourcePath = $dialogContainer.attr("data-resourcepath");
+		var $containerManager = $dialogContainer.find("dd.containerManager");
+		var $componentList = $containerManager.find("ul.containerElements");
+
+		$.get(resourcePath + ".container.json", function(components) {
+			$componentList.empty();
+			$.each(components, function(index, component) {
+				var title = component.title;
+				if (title == undefined)
+				{
+					title = component.name;
+				}
+				$componentListitem = $("<li></li>");
+				var $actions = $("<div class='actions'></div>");
+				$actions.append("<span class='goto glyphicon glyphicon-eye-open' title='Scroll to Component'></span>");
+				$actions.append("<span class='remove glyphicon glyphicon-remove' title='Remove Component'></span>");
+				$actions.appendTo($componentListitem);
+
+				$componentListitem.addClass("instantiatedComponent")
+				$componentListitem.attr("data-resourcepath", component.path);
+				$componentListitem.attr("name", component.name);
+				$componentListitem.append("<span class='number'>" + (index + 1) + ".</span>");
+				$componentListitem.append("<span class='title'>" + title + "</span>");
+				$componentListitem.appendTo($componentList);
+			});
+			if ($componentList.find("li").length == 0)
+			{
+				$componentList.append("<li class='placeholder'>Drop new compenents here</li>");
+			}
+			else
+			{
+				$componentList.append("<li class='placeholder' style='display: none;'>Drop new compenents here</li>");
+			}
+
+			initRemoveTrigger($dialogContainer);
+			initGotoTrigger($dialogContainer);
+			initOpenDialog($dialogContainer);
+
+			$componentList.find("li").mouseenter(function() {
+				$selectedComponent = $(this);
+				var resourcePath = $selectedComponent.attr("data-resourcepath");
+
+				$matchingComponent = $("div.editableComponentContainer li.containerItem[data-resourcepath='" + resourcePath + "']");
+				$matchingComponent.addClass("selected");
+			});
+
+			$componentList.find("li").mouseleave(function() {
+				$selectedComponent = $(this);
+				var resourcePath = $selectedComponent.attr("data-resourcepath");
+
+				$matchingComponent = $("div.editableComponentContainer li.containerItem[data-resourcepath='" + resourcePath + "']");
+				$matchingComponent.removeClass("selected");
+			});
+
+			var copyHelper = null;
+			$("ul.containerElements, ul.newElements").sortable({
+																   helper: "clone",
+																   connectWith: "ul.containerElements",
+																   start: function(event, ui) {
+																	   if ($(ui.placeholder).parent().hasClass('newElements'))
+																	   {
+																		   ui.placeholder.css({height: "0px", margin: "0", padding: "0", border: "0"});
+																	   }
+																   },
+																   cancel: ".placeholder",
+																   stop: function(event, ui) {
+																	   copyHelper = null;
+
+																	   var $liItem = $(ui.item);
+																	   if ($liItem.hasClass("newComponent") && $liItem.attr("name") == null)
+																	   {
+																		   var resourceName = $liItem.data("resource-name");
+																		   var instanceName = resourceName + "-" + new Date().getTime();
+																		   $liItem.attr("name", instanceName);
+																	   }
+
+																	   if ($componentList.find("li.instantiatedComponent, li.newComponent").length == 0)
+																	   {
+																		   $componentList.find(".placeholder").show();
+																	   }
+																	   else
+																	   {
+																		   $componentList.find(".placeholder").hide();
+																	   }
+
+																	   rebuildComponentList($dialogContainer);
+																	   initRemoveTrigger($dialogContainer);
+																   },
+																   helper: function(e, li) {
+																	   if (li.parent().hasClass('newElements'))
+																	   {
+																		   copyHelper = li.clone().insertAfter(li);
+																		   var $clonedElement = li.clone();
+																		   return $clonedElement;
+																	   }
+																	   else
+																	   {
+																		   return li;
+																	   }
+																   },
+																   beforeStop: function(ev, ui) {
+																	   if ($(ui.placeholder).parent().hasClass('newElements'))
+																	   {
+																		   $(ui.item).remove();
+																	   }
+																   }
+															   }).disableSelection();
+		});
+
+		$dialogContainer.bind("actionCloseDialog", clearSelectedItems);
+
+		$dialogContainer.bind("saveTriggered", function(event, data) {
+			if ($componentList.data("components-to-be-deleted") instanceof Array)
+			{
+				$.each($componentList.data("components-to-be-deleted"), function(index, element) {
+					$.ajax({
+							   url: resourcePath + ".deleteChild.json",
+							   type: "POST",
+							   data: {
+								   childName: element
+							   },
+							   async: false
+						   });
+				});
+			}
+
+			$componentList.find(".newComponent").each(function(index, element) {
+				var $newComponent = $(element);
+				var containerRespourcepath = $newComponent.data("container-respourcepath");
+				var childName = $newComponent.attr("name");
+
+				$.ajax({
+						   url: resourcePath + ".addChild.json",
+						   type: "POST",
+						   data: {
+							   childName: childName,
+							   componentPath: containerRespourcepath
+						   },
+						   async: false
+					   });
+			})
+		});
+	}
+
+	return {
+		init: init
+	}
+});

@@ -1,0 +1,9 @@
+<dt>{parameter.element.label}</dt>
+<dd>
+    {foreach option in parameter.element.options}
+    <input type="radio" name="{parameter.name}" data-property="{parameter.element.property}" value="{option.value}" {if
+    parameter.value eq option.value}checked{end} {if option.default and
+    isUndefined(parameter.value)}checked{end}>{option.name}<br>
+    {end}
+    <div class="description">{parameter.element.description}</div>
+</dd>

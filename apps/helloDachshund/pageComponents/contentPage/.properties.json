@@ -1,0 +1,5 @@
+{
+	"type": "component",
+	"superComponent": "/apps/helloDachshund/pageComponents/homePage",
+	"componentPath": "SELF"
+}

@@ -1,0 +1,2 @@
+<link rel="stylesheet" type="text/css" href="{component.componentResource.path}.css"/>
+<link rel="stylesheet" type="text/css" href="/libs/styles/bootstrap.css"/>

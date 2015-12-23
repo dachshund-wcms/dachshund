@@ -1,0 +1,40 @@
+define(["jquery"], function($) {
+
+	init = function() {
+		$("button#login").click(function() {
+			$(this).addClass("disabled");
+			$("div.login-in-progress").show();
+
+			var credentials = {
+				username: $("input#username").val(),
+				password: $("input#password").val()
+			};
+
+			$.ajax("/apps/core/services/user/authenticate.html", {
+				data: credentials,
+				error: function() {
+					$("button#login").removeClass("disabled");
+					$("div.login-in-progress").hide();
+					$("div.alert-login-incorrect").show();
+					$("div.login-successful").hide();
+				},
+				success: function() {
+					$("button#login").removeClass("disabled");
+					$("div.login-in-progress").hide();
+					$("div.alert-login-incorrect").hide();
+					$("div.login-successful").show();
+
+					var redirectTo = $("input#redirectTo").val();
+					if (redirectTo != "")
+					{
+						window.location = redirectTo;
+					}
+				}
+			});
+		});
+	}
+
+	return {
+		init: init
+	}
+});

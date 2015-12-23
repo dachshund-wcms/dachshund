@@ -1,0 +1,15 @@
+{
+	"type": "component",
+	"superComponent": "/apps/core/components/dialog",
+	"componentPath": "SELF",
+	"dialog": {
+		"title": "Markdown Dialog",
+		"text": {
+			"input": "textarea",
+			"rows": 20,
+			"label": "Text",
+			"property": "markdownText",
+			"description": "The markdown text which will be processed to html before it's shown"
+		}
+	}
+}

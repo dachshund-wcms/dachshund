@@ -1,0 +1,5 @@
+{if properties.htmlContent}
+{properties.htmlContent}
+{else}
+<i>There is no text defined</i>
+{end}
