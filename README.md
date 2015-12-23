@@ -59,14 +59,14 @@ The filtering is applied to the file name, while the _script extension_ states h
 ## Setup
 
 ### Step 1.1 - Download and Unpack ...
-All releases are listed here. Download the source code from [https://github.com/dachshund-wcms/core/releases](https://github.com/dachshund-wcms/core/releases/latest) and unpack it into your file system.
+All releases are listed here. Download the source code from [https://github.com/dachshund-wcms/dachshund/releases](https://github.com/dachshund-wcms/dachshund/releases/latest) and unpack it into your file system.
 
 ### Step 1.2 - ... or Clone Latest Version from GitHub
-Use your UI client and clone the repository [https://github.com/dachshund-wcms/core](https://github.com/dachshund-wcms/core) change to the flag version 2.0 or use a command line client.
+Use your UI client and clone the repository [https://github.com/dachshund-wcms/dachshund](https://github.com/dachshund-wcms/dachshund) change to the flag version 2.0 or use a command line client.
 
 ```bash
 cd basepath/to/clone/dachshund
-git clone https://github.com/dachshund-wcms/core dachshund
+git clone https://github.com/dachshund-wcms/dachshund.git
 ```
 
 ### Step 2 - Finish installation
