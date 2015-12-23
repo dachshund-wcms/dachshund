@@ -63,7 +63,7 @@ Use your UI client and clone the repository _[https://github.com/dachshund-wcms/
 
 ```bash
 cd basepath/to/clone/dachshund
-git clone [https://github.com/dachshund-wcms/core](https://github.com/dachshund-wcms/core) dachshund
+git clone https://github.com/dachshund-wcms/core dachshund
 cd dachshund
 ```
 
