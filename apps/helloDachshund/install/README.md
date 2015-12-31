@@ -1,0 +1,2 @@
+# Application Install Folder
+All files stored in this folder, will copied into the root directory of Dachshund at the point fo time Dachshund starts. This action will be executed only once and persisted in the _.properties.json_ of this folder. When you want to reinstall the files, set the property _alreadyInstalled_ installed within _.properties.json_ to _false_ and restart Dachshund. Is the property _installAlways_ set to _true_ the files in the install folder will be installed each time Dachshund gets started.
