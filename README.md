@@ -81,6 +81,9 @@ npm install
 Dachshund provides two methods to be started as normal or as debug application from the shell. The difference is that with one method its possible to use remote debugging like [node-inspector](https://github.com/node-inspector/node-inspector). The other one starts just the application and redirects the log output into a log file.
 
 ## Version History
+- __2.1__ - Enhanced functionality to manage applications and facilitate the development process. Added custom nodes modules which are part of Dachshund WCMS.
+  - [Feature] Added custom node module _apps-initializer_. It Searches through each application in the '/apps' folder. In case they contain an 'install' folder their content get copied into the root of Dachshund. 
+  - [Bugfix] Added missing custom _node_module_ which are part of Dachshund 
 - __2.0__ - First publicly available version. It is contains the core of _Dachshund_ and all functionality to build applications or rich frontend on top of it.
   - REST API
   - Resource Resolving and Managing
