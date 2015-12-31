@@ -1,2 +1,2 @@
 # Client Libraries
-This folder can contain all client libraries like stylesheets or javascript files to make them accessible as static files through dachshund.
+This folder can contain all client libraries like stylesheets or javascript files to make them accessible as static file resource. To add files to this folder, put them into the _install_ folder of your application: /apps/<yourAppName>/install/libs/<yourAppName>/<myStaticResourceFiles>
