@@ -8,24 +8,24 @@ node_modules/
 doc/
 logs/
 
-# Local node installation
+# Local Node.js installation
 node-*/
 
 # Ignores all applications which are not part of Dachshund
-apps/**/*
+apps/*
 !apps/main.js
 !apps/helloDachshund
 !apps/node_modules
 !apps/core
 
 # Ignores all content which is not part of Dachshund
-content/**/*
+content/*
 !content/.auth.json
 
 # Ignore all users except anonymous
-home/users/**/*
+home/users/*
 !home/users/anonymous
 
 # Ignore all libs which are not part of Dachshund
-libs/**/*
+libs/*
 !libs/README.md
