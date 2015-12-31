@@ -83,6 +83,7 @@ Dachshund provides two methods to be started as normal or as debug application f
 ## Version History
 - __2.1__ - Enhanced functionality to manage applications and facilitate the development process. Added custom nodes modules which are part of Dachshund WCMS.
   - [Feature] Added custom node module _apps-initializer_. It Searches through each application in the '/apps' folder. In case they contain an 'install' folder their content get copied into the root of Dachshund. 
+  - [Feature] Added bash script to detect the Node.js installation and to download and install a compatible version, in case the system doesn't provide one
   - [Bugfix] Added missing custom _node_module_ which are part of Dachshund 
 - __2.0__ - First publicly available version. It is contains the core of _Dachshund_ and all functionality to build applications or rich frontend on top of it.
   - REST API
