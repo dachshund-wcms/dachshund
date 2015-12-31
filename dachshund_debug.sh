@@ -1,28 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+######################################################
+# Exit bash script in case on error occurs during
+# executing the subsequent steps
+######################################################
+set -e
+
+######################################################
+# Change to to the directory of the executable, this
+# ensures that the context in which this script is
+# executed is the root folder of Dachshund
+######################################################
 cd `dirname $0`
 
-export PATH=$PATH:apps/runtimeTests/node_modules/phantomjs/bin
+######################################################
+# Path to the executeable of Node.js
+######################################################
+readonly NODE_EXECUTEABLE=$(./tools/getNodejsInstallation.sh)
 
-#node apps/mainTests.js
-#if [ "$?" = "1" ]; then
-#	echo "----------------------------------------------"
-#	echo "There are errors in the nodeunit tests."
-#	echo "Fix them first before starting the application."
-#	echo "----------------------------------------------"
-#	exit 1
-#fi
-
+######################################################
+# Starts Dachshund with remote debugging enabled
+# in case the bash script was started with '-debug'
+# flag the application breaks at the first line and
+# has to be continued with the remote debugger
+######################################################
 if [[ "$1" = "--debug" ]]
 then
-    node --debug-brk --harmony apps/main.js &
+    ${NODE_EXECUTEABLE} --debug-brk --harmony apps/main.js &
 else
-    node --debug --harmony apps/main.js &
+    ${NODE_EXECUTEABLE} --debug --harmony apps/main.js &
 fi
 DACHSHUND_PROCESS_ID=$!
 sleep 1
-#node  apps/mainRuntimeTests.js
 read -p "Press [Enter] key to end process..."
-#echo Kill Process id $ELASTICSEARCH_PROCESS_ID
-#kill $ELASTICSEARCH_PROCESS_ID
 kill $DACHSHUND_PROCESS_ID
