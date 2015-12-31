@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 					template: './node_modules/ink-docstrap/template',
 					readme: 'README.md',
 					config: './config/jsdoc.json',
-					tutorials:  './tutorials'
+					tutorials: './tutorials'
 				}
 			}
 		}, copy: {
@@ -27,6 +27,12 @@ module.exports = function(grunt) {
 			jsdoc: {
 				src: ['../dachshund-wcms.github.io.git/*', '!../dachshund-wcms.github.io.git/.git', '!../dachshund-wcms.github.io.git/CNAME']
 			}
+		}, watch: {
+			jsdoc: {
+				files: ['apps/node_modules/**/*.js', 'README.md', 'tutorials/*.md'], tasks: ['createDocumentation'], options: {
+					spawn: false
+				}
+			}
 		}
 
 	};
@@ -35,6 +41,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-jsdoc');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 
 	grunt.registerTask('createDocumentation', ['clean:jsdoc', 'copy:jsdoc', 'jsdoc:main']);
 
