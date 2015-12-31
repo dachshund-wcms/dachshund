@@ -1,15 +1,17 @@
-<div class="componentContainer {component.componentResource.name} {if component.superComponent}{component.superComponent.componentResource.name}{end}"
-     data-resourcePath="{resource.path}" data-resourceName="{resource.name}">{includeScript("content.jazz")}
-</div>
+<section class="componentContainer {component.componentResource.name} {if component.superComponent}{component.superComponent.componentResource.name}{end}" data-content-path="{resource.path}" data-name="{resource.name}">{includeScript("content.jazz")}</section>
 {if properties.deactivateScript neq "true"}
 <script type="text/javascript">
+    (function(componentScriptPath) {{
+        require(["jquery", componentScriptPath], function($, componentScript) {{
+            if (componentScript != null && componentScript.init != undefined)
+            {{
+                componentScript.init();
+            }}
+        }});
+    }})("{component.componentResource.path}.js");
 
-    {includeScript("script.static")}
-    ("{component.componentResource.path}.js");
-
-    require(["/libs/scripts/loadCSS/loadCss.js"], function(loadCss) {{
+    require(["/libs/core/scripts/loadCSS/loadCss.js"], function(loadCss) {{
         loadCss.loadStyle("{component.componentResource.path}.css");
     }});
-
 </script>
 {end}

@@ -1,8 +1,0 @@
-(function(componentScriptPath) {
-	require(["jquery", componentScriptPath], function($, componentScript) {
-		if (componentScript != null && componentScript.init != undefined)
-		{
-			componentScript.init();
-		}
-	});
-})
