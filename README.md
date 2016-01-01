@@ -1,6 +1,9 @@
 # Dachshund WCMS
 Dachshund is a fast and lightweight WCMS. It's goal is to provide a content centric WCMS with a transparent and structured REST API to access and modify its data. It is tailored to support state of the art web application development with HTML5, CSS3 and Javascript.
 
+## Purpose and Target Group
+The aim of Dachshund is to provide a powerful but lightweight WCMS for rapid development of HTML5 web applications and websites with Node.js. The main target group are web developer which want to concentrate their work on creating amazing HTML5 web experiences combined with a flexible backend which provides backend interactions for any part of their web experience. The build in REST logic and the component model makes this possible. The unstructured but hierarchical organized repository follows the natural structure of websites and is tailored to provide a maximum of flexibility and to enhance whenever it's required. The goal is to focus on creating business value and to facilitate the surrounding framework provided by Dachshund. 
+
 ## Unstructured Content / Hierarchical Relationship
 Dachshund comes bundled with a content repository and the API to access it. So there is no need for an additional database. Everything you need is your local file system. As the web is unstructured our content is unstructured as well. There is no need of database design. As web pages and their content is hierarchical structured, the relationship between data elements - we call them _resources_ - is defined in the same same way.
 
@@ -102,3 +105,18 @@ Even when Dachshund reached the version 2.0 the current implementation provide p
 - Functionality to replicate content between dachshund instances
 - Functionality to use Dachshund with SAML and/or LDAP
 - Possibility to use databases like MongoDB or CouchDB
+
+## License
+_Copyright 2016 Sascha Brinkmann_
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
