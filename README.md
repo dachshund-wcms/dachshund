@@ -83,22 +83,6 @@ npm install
 ## Startup
 Dachshund provides two methods to be started as normal or as debug application from the shell. The difference is that with one method its possible to use remote debugging like [node-inspector](https://github.com/node-inspector/node-inspector). The other one starts just the application and redirects the log output into a log file.
 
-## Version History
-- __2.1__ - Enhanced functionality to manage applications and facilitate the development process. Added custom nodes modules which are part of Dachshund WCMS.
-  - [Feature] Added custom node module _apps-initializer_. It Searches through each application in the '/apps' folder. In case they contain an 'install' folder their content get copied into the root of Dachshund. 
-  - [Feature] Added bash script to detect the Node.js installation and to download and install a compatible version, in case the system doesn't provide one
-  - [Bugfix] Added missing custom _node_module_ which are part of Dachshund 
-- __2.0__ - First publicly available version. It is contains the core of _Dachshund_ and all functionality to build applications or rich frontend on top of it.
-  - REST API
-  - Resource Resolving and Managing
-  - Component Handling
-  - Basic Authentication and Authorization
-  - Central [configuration framework](https://www.npmjs.com/package/config)
-  - Render HTML templates with [Jazz](https://github.com/shinetech/jazz) templating engine
-  - Render CSS templates with [Less](https://www.npmjs.com/package/less)
-  - Multilingual Support with [i18n](https://www.npmjs.com/package/i18n)
-- __1.0__ - Was the first implementation which was a proof of concept and used only for internal implementations, it provided the same functionality as the first published version 2.0 but wasn't tested or documented in any kind
-
 ## Wishlist
 Even when Dachshund reached the version 2.0 the current implementation provide primarily the core functionality for a WCMS. 
 - Authoring and administration web HTML5 frontend
