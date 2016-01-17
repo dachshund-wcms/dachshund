@@ -14,6 +14,7 @@ const nodeStatic = require('node-static');
 const dispatcher = require('component-handler');
 const i18n = require("i18n");
 const appsInitializer = require('apps-initializer');
+const socketIoManaer = require('socket-io-manager');
 
 const fileNodeStatic = new nodeStatic.Server({cache: false});
 
@@ -100,6 +101,8 @@ var server = http.createServer(function(req, res) {
 		logger.error("Error while proccessing request >> " + err);
 	}
 });
+
+socketIoManaer.init(server);
 
 appsInitializer.init();
 
