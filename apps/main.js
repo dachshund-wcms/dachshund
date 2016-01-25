@@ -16,6 +16,14 @@ const i18n = require("i18n");
 const appsInitializer = require('apps-initializer');
 const socketIoManaer = require('socket-io-manager');
 
+process.on('uncaughtException', function(err) {
+	logger.error("Unhandled exception during runtime", err);
+});
+
+process.on('unhandledRejection', function(reason, p) {
+	logger.error("Unhandled Rejection at: Promise " + p + " reason: " + reason);
+});
+
 const fileNodeStatic = new nodeStatic.Server({cache: false});
 
 i18n.configure(config.get("i18n"));
@@ -71,8 +79,8 @@ var server = http.createServer(function(req, res) {
 							res.write("404 Resource Not Found\n");
 							res.end();
 						}
-					}).fail(function(error){
-						logger.error("Error while authenticating user ["+ error.toString() +"]");
+					}).fail(function(error) {
+						logger.error("Error while authenticating user [" + error.toString() + "]");
 
 						res.writeHead(401, {"Content-Type": "text/plain; charset=utf-8"});
 						res.write("401 Unauthorized\n");
@@ -85,8 +93,8 @@ var server = http.createServer(function(req, res) {
 					res.write("401 Unauthorized\n");
 					res.end();
 				}
-			}).fail(function(error){
-				logger.error("Error while authenticating user ["+ error.toString() +"]");
+			}).fail(function(error) {
+				logger.error("Error while authenticating user [" + error.toString() + "]");
 
 				res.writeHead(401, {"Content-Type": "text/plain; charset=utf-8"});
 				res.write("401 Unauthorized\n");
