@@ -21,7 +21,7 @@ process.on('uncaughtException', function(err) {
 });
 
 process.on('unhandledRejection', function(reason, p) {
-	logger.error("Unhandled Rejection at: Promise " + p + " reason: " + reason);
+	logger.error("Unhandled Rejection.", reason);
 });
 
 const fileNodeStatic = new nodeStatic.Server({cache: false});
