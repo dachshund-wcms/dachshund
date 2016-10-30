@@ -6,6 +6,9 @@
   "author": "Sascha Brinkmann <sascha.brinkmann(at)gmail.com>",
   "license": "Apache-2.0",
   "homepage": "http://www.dachshund-wcms.com",
+  "scripts": {
+    "start": "node apps/main.js"
+  },
   "bugs": {
     "url": "https://github.com/dachshund-wcms/core/issues"
   },

@@ -81,7 +81,13 @@ npm install
 ```
 
 ## Startup
-Dachshund provides two methods to be started as normal or as debug application from the shell. The difference is that with one method its possible to use remote debugging like [node-inspector](https://github.com/node-inspector/node-inspector). The other one starts just the application and redirects the log output into a log file.
+The startup is similar to installation process. Just use npm to start Dachshund WCMS.
+```
+cd path/to/dachshund
+npm start
+```
+
+Furthermore it's possible to start dachshund from the a Linux shell. Use `dachshund.sh` or `dachshund_debug.sh` to start Dachshund as a normal or as debug application from the shell. The difference is that with one method its possible to use remote debugging like [node-inspector](https://github.com/node-inspector/node-inspector). The other one starts just the application and redirects the log output into a log file.
 
 ## Wishlist
 Even when Dachshund reached the version 2.0 the current implementation provide primarily the core functionality for a WCMS. 
