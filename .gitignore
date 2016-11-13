@@ -29,3 +29,10 @@ home/users/*
 # Ignore all libs which are not part of Dachshund
 libs/*
 !libs/README.md
+
+# Ignore the favicon in case it was compied from
+ä an application into the rooth path of Dachshund
+/favicon.ico
+
+# Components which were downloaded with bower
+bower_components/
