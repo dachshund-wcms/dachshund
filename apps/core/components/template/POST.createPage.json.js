@@ -41,7 +41,7 @@ let resourceNameFromTitle = function(title) {
 };
 
 let lookupUnusedResourceName = function(baseResource, newPageResourceName) {
-	if (baseResource.properties.childPages == undefined)
+	if (baseResource.properties.childPages === undefined)
 	{
 		return newPageResourceName;
 	}
@@ -76,69 +76,65 @@ let lookupUnusedResourceName = function(baseResource, newPageResourceName) {
 	return resultNewPageResourceName;
 };
 
-let createNewPage = function(req, res, pathInfo, templateResource, postParameters) {
+let createNewPage = async function(req, res, pathInfo, templateResource, postParameters) {
 	let basePath = postParameters.basePath;
 	delete postParameters["postParameters"];
-	repositoryManager.resolve(basePath).then(function(baseResource) {
-		if (baseResource.type == resourceTypes.NOT_FOUND)
-		{
-			res.writeHead(500, {"Content-Type": "text/plain; charset=utf-8"});
-			res.write("The give base path '" + basePath + "' is not a resource.");
-			res.end();
-		}
-		else
-		{
-			let newPageResourceName = resourceNameFromTitle(postParameters.title);
-			newPageResourceName = lookupUnusedResourceName(baseResource, newPageResourceName);
-			let newPageResourcePath = basePath + "/" + newPageResourceName;
 
-			repositoryManager.createResource(newPageResourcePath, function(newPageResource) {
-				ncp("." + templateResource.path + "/content", "." + newPageResource.path, function(err) {
-					if (err)
-					{
-						res.writeHead(500, {"Content-Type": "text/plain; charset=utf-8"});
-						res.write("Error while copying the template towards the destination.");
-						res.end();
+	let baseResource = await repositoryManager.resolve(basePath);
 
-					}
-					else
-					{
-						newPageResource.loadProperties();
-						for (let postParameterIndex in postParameters)
-						{
-							let postParameter = postParameters[postParameterIndex];
-							if (isJsonObject(postParameter))
-							{
-								postParameter = JSON.parse(postParameter);
-							}
-							newPageResource.properties[postParameterIndex] = postParameter;
-						}
-						newPageResource.properties.template = templateResource.path;
-						newPageResource.saveProperties(function() {
-							let childPages = [];
-							if (baseResource.properties.childPages != undefined)
-							{
-								childPages = baseResource.properties.childPages;
-							}
-							childPages.push(newPageResourceName);
-							baseResource.properties.childPages = childPages;
-							baseResource.saveProperties();
+	if (baseResource.type === resourceTypes.NOT_FOUND)
+	{
+		throw new Error(`The give base path [${basePath}] was not found or is not a resource.`);
+	}
+	else
+	{
+		let newPageResourceName = resourceNameFromTitle(postParameters.title);
+		newPageResourceName = lookupUnusedResourceName(baseResource, newPageResourceName);
+		let newPageResourcePath = basePath + "/" + newPageResourceName;
 
-							res.writeHead(200, {"Content-Type": "application/json; charset=utf-8"});
-							res.write(JSON.stringify({"newPageName": newPageResourceName, "newPagePath": newPageResourcePath}));
-							res.end();
-						});
-					}
-				});
+		let newPageResource = await repositoryManager.createResource(newPageResourcePath);
+
+		await new Promise((resolve, reject) => {
+			ncp("." + templateResource.path + "/content", "." + newPageResource.path, function(err) {
+				if (err)
+				{
+					reject(err);
+				}
+				else
+				{
+					resolve();
+				}
 			});
-		}
-	}).fail(function(err){
-		logger.error("Error while resolving resource '"+ basePath +"' beacause of: " + err.toString());
+		});
 
-		res.writeHead(500, {"Content-Type": "application/json; charset=utf-8"});
-		res.write("Error while creating page.");
-		res.end();
-	});
+		newPageResource.loadProperties();
+		for (let postParameterKey in postParameters)
+		{
+			let postParameterValue = postParameters[postParameterKey];
+			if (isJsonObject(postParameterValue))
+			{
+				postParameterValue = JSON.parse(postParameterValue);
+			}
+			newPageResource.properties[postParameterKey] = postParameterValue;
+		}
+		newPageResource.properties.template = templateResource.path;
+		await newPageResource.saveProperties();
+
+		let childPages = [];
+		if (baseResource.properties.childPages !== undefined)
+		{
+			childPages = baseResource.properties.childPages;
+		}
+		childPages.push(newPageResourceName);
+		baseResource.properties.childPages = childPages;
+		await baseResource.saveProperties();
+
+		return {
+			"newPageName": newPageResourceName,
+			"newPagePath": newPageResourcePath
+		};
+	}
+
 };
 
 createPage.handle = function(req, res, pathInfo, templateResource) {
@@ -150,15 +146,25 @@ createPage.handle = function(req, res, pathInfo, templateResource) {
 
 		let postParameters = qs.parse(body);
 
-		if (postParameters.basePath == undefined)
+		if (postParameters.basePath === undefined)
 		{
 			res.writeHead(500, {"Content-Type": "text/plain; charset=utf-8"});
-			res.write("The post parameter 'basePath' isn't defined.");
+			res.write("The post parameter [basePath] isn't defined.");
 			res.end();
 		}
 		else
 		{
-			createNewPage(req, res, pathInfo, templateResource, postParameters);
+			createNewPage(req, res, pathInfo, templateResource, postParameters).then(result => {
+				res.writeHead(200, {"Content-Type": "application/json; charset=utf-8"});
+				res.write(JSON.stringify(result));
+				res.end();
+			}).catch(err => {
+				logger.error(`Error while creating new page within [${postParameters.basePath}]`, err);
+
+				res.writeHead(500, {"Content-Type": "application/json; charset=utf-8"});
+				res.write("Error while creating page.");
+				res.end();
+			});
 		}
 	});
 };

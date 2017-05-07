@@ -1,31 +1,31 @@
 prepare = exports;
 
-var processDialogEntries = function(dialogEntriesSource, dialogEntriesDestination, resource) {
-	for (dialogElementIndex in dialogEntriesSource)
+let processDialogEntries = function(dialogEntriesSource, dialogEntriesDestination, resource) {
+	let dialogElementIndex = 0;
+	for (let dialogElement of dialogEntriesSource)
 	{
-		var dialogElement = dialogEntriesSource[dialogElementIndex];
-		if (typeof dialogElement == "object")
+		if (typeof dialogElement === "object")
 		{
-			var dialogEntry = {};
+			let dialogEntry = {};
 			dialogEntry.script = dialogElement.input + ".jazz";
-			dialogEntry.name = dialogElementIndex
+			dialogEntry.name = dialogElementIndex++;
 			dialogEntry.value = resource.properties[dialogElement.property];
 			dialogEntry.element = dialogElement;
 			dialogEntriesDestination.push(dialogEntry);
-			if (dialogElement.input == "expandable")
+			if (dialogElement.input === "expandable")
 			{
-				var dialogEntries = [];
+				let dialogEntries = [];
 				dialogEntry.dialogEntries = dialogEntries;
 				processDialogEntries(dialogElement.elements, dialogEntries, resource);
 			}
 		}
 	}
-}
+};
 
 prepare.handle = function(req, res, pathInfo, resource, component) {
-	var dialogEntries = [];
+	let dialogEntries = [];
 
 	processDialogEntries(component.componentResource.properties.dialog, dialogEntries, resource)
 
 	component.componentResource.properties.dialogEntries = dialogEntries;
-}
+};

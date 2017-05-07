@@ -1,20 +1,14 @@
-var Q = require('q');
-var prepare = exports;
+let prepare = exports;
 
-prepare.handle = function(req, res, pathInfo, resource, component) {
-	var deferred = Q.defer();
+prepare.handle = async function(req, res, pathInfo, resource, component) {
 
 	resource.properties.contentPath = resource.path + "/content";
 
-	resource.getFiles(function(fileList) {
-		fileList.forEach(function(file) {
-			if (file.startsWith("thumb"))
-			{
-				resource.properties.thumb = resource.path + "/" + file;
-			}
-		});
-		deferred.resolve();
+	let fileList = await resource.getFiles();
+	fileList.forEach(function(file) {
+		if (file.startsWith("thumb"))
+		{
+			resource.properties.thumb = resource.path + "/" + file;
+		}
 	});
-
-	return deferred.promise;
 };
